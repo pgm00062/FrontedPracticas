@@ -20,6 +20,204 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* =================================
+   CLASES PREDEFINIDAS PERSONALIZADAS
+   ================================= */
+
+@layer components {
+  /* =================================
+     CONTENEDORES Y LAYOUTS
+     ================================= */
+  .container-main {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-section {
+    @apply max-w-4xl mx-auto px-4 py-8;
+  }
+  
+  .container-page {
+    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white;
+  }
+  
+  .navbar {
+    @apply bg-white shadow-sm border-b border-gray-200 py-4;
+  }
+  
+  .sidebar {
+    @apply bg-white shadow-lg h-screen w-64 fixed left-0 top-0 border-r border-gray-200;
+  }
+
+  /* =================================
+     BOTONES
+     ================================= */
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-sm;
+  }
+  
+  .btn-outline {
+    @apply border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+  
+  .btn-outline-danger {
+    @apply border border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+  
+  .btn-small {
+    @apply py-1.5 px-3 text-sm;
+  }
+  
+  .btn-large {
+    @apply py-3 px-6 text-lg;
+  }
+
+  /* =================================
+     CARDS
+     ================================= */
+  .card {
+    @apply bg-white shadow-md rounded-xl border border-gray-200 p-6;
+  }
+  
+  .card-hover {
+    @apply bg-white shadow-md hover:shadow-xl rounded-xl border border-gray-200 p-6 transition-all duration-300 cursor-pointer;
+  }
+  
+  .card-compact {
+    @apply bg-white shadow-sm rounded-lg border border-gray-200 p-4;
+  }
+  
+  .card-hero {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl rounded-xl p-8;
+  }
+
+  /* =================================
+     FORMULARIOS
+     ================================= */
+  .form-group {
+    @apply mb-4;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200;
+  }
+  
+  .form-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white;
+  }
+  
+  .form-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-vertical;
+  }
+  
+  .form-error {
+    @apply text-red-600 text-sm mt-1;
+  }
+
+  /* =================================
+     TABLAS
+     ================================= */
+  .table-container {
+    @apply overflow-x-auto bg-white rounded-lg shadow border border-gray-200;
+  }
+  
+  .table {
+    @apply w-full text-sm text-left text-gray-900;
+  }
+  
+  .table-header {
+    @apply bg-gray-50 border-b border-gray-200;
+  }
+  
+  .table-th {
+    @apply px-6 py-3 font-medium text-gray-700 uppercase tracking-wider;
+  }
+  
+  .table-td {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+  
+  .table-row-hover {
+    @apply hover:bg-gray-50 transition-colors duration-150;
+  }
+
+  /* =================================
+     ESTADOS Y BADGES
+     ================================= */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .badge-info {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  /* =================================
+     LOADING Y SPINNERS
+     ================================= */
+  .spinner {
+    @apply animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-600;
+  }
+  
+  .loading-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  }
+
+  /* =================================
+     TÍTULOS Y TEXTOS
+     ================================= */
+  .heading-1 {
+    @apply text-3xl font-bold text-gray-900 mb-6;
+  }
+  
+  .heading-2 {
+    @apply text-2xl font-semibold text-gray-900 mb-4;
+  }
+  
+  .heading-3 {
+    @apply text-xl font-semibold text-gray-900 mb-3;
+  }
+  
+  .text-muted {
+    @apply text-gray-600;
+  }
+  
+  .text-success {
+    @apply text-green-600;
+  }
+  
+  .text-danger {
+    @apply text-red-600;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
