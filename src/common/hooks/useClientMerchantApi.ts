@@ -3,7 +3,11 @@ import {
   ClientService, 
   MerchantService
 } from '../../service/src/clientMerchantService';
-import type {
+import {
+  CreateClientRequest,
+  UpdateClientRequest,
+  CreateMerchantRequest,
+  UpdateMerchantRequest,
   ClientInputDto,
   MerchantInputDto,
   MerchantInputUpdateDto
