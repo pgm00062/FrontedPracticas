@@ -23,11 +23,11 @@ export default function ReactQueryProvider({
               if (error?.response?.status === 403) return false;
               return failureCount < 2;
             },
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: false, //cuando volver a solicitar datos al volver a la pestaña
             refetchOnMount: true,
             refetchOnReconnect: true,
           },
-          mutations: {
+          mutations: { //configura operaciones de escritura(POST, PUT, DELETE) con un 1 reintento
             retry: 1,
           },
         },

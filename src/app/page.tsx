@@ -1,6 +1,6 @@
 import TestBackendConnection from "@/common/components/TestBackendConnection";
-import CreateClientForm from "@/common/components/CreateClientForm";
-import GetBClientIDComponent from "@/common/components/GetBClientIDComponent";
+import CreateClientForm from "@/common/components/CreateClientForm/delivery";
+import GetBClientIDComponent from "@/common/components/GetBClientIDComponent/delivery";
 
 export default function Home() {
   return (
