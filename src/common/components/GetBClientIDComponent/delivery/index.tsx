@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { LogEntry, ClientData, JWTClientData } from './interface';
-import {createLogEntry, getLogClassName} from '../infrastructure/logOperations';
+import type { LogEntry, ClientData} from './interface';
+import {createLogEntry} from '../infrastructure/logOperations';
 import { searchClientById } from '../infrastructure/clientSearchOperations';
 
 import SearchForm from './components/searchForm';

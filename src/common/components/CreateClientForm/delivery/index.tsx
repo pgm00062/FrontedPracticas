@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import type {ClientFormData, CreateClientResult } from './interface';
-import { 
-  DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData, transformClientForCreation 
-} from '../infrastructure/clientDataOperations';
-import { createLogEntry, getLogClassName } from '../infrastructure/logOperations';
+import {DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData } from '../infrastructure/clientDataOperations';
+import { createLogEntry} from '../infrastructure/logOperations';
 import { createClientWithJWT } from '../infrastructure/clientCreationOperations';
 
 import ClientFormFields from './components/clientFormFields';
