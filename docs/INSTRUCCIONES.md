@@ -1,27 +1,540 @@
-# 🚀 Guía Completa: Conectar Frontend Next.js con Microservicios Client y Merchant
+# 🚀 Guía Completa: Cómo Conectamos Frontend Next.js con Backend Spring Boot + DynamoDB
 
-## ✅ Estado Actual
-✅ Frontend Next.js configurado con TypeScript y Tailwind  
-✅ React Query instalado y configurado  
-✅ Axios configurado con interceptores JWT  
-✅ Componente TestConnection creado y funcionando  
-✅ Servicios específicos para Client y Merchant implementados  
-✅ Variables de entorno configuradas correctamente  
-✅ Sistema compilando sin errores  
-✅ Tipos TypeScript actualizados para MerchantDynamoEntity y ClientDynamoEntity  
-✅ Enum MerchantType definido correctamente  
-✅ Endpoints de Client actualizados según tu ClientController real  
-✅ ClientService actualizado con métodos específicos de tu API  
-✅ Endpoints de Merchant actualizados según tu MerchantController real  
-✅ MerchantService actualizado con métodos específicos de tu API  
-✅ **CONECTIVIDAD BÁSICA FUNCIONANDO PERFECTAMENTE**  
-✅ **Health checks operativos en ambos microservicios**  
+## 📖 **Índice de Contenidos**
+1. [🎯 Arquitectura General](#arquitectura)
+2. [🔧 Configuración Base](#configuracion-base)
+3. [🌐 Sistema de Comunicación HTTP](#comunicacion-http)
+4. [📊 Gestión de Estado y Datos](#gestion-estado)
+5. [🎨 Componentes de Interfaz](#componentes-interfaz)
+6. [🔄 Flujo Completo de Datos](#flujo-datos)
+7. [✅ Estado Actual](#estado-actual)
 
-## 🏗️ Tu Arquitectura de Microservicios
-- **Client Service:** http://localhost:8080
-- **Merchant Service:** http://localhost:8081
+---
 
-## 🔧 Configuración del Backend Spring Boot
+## 🎯 Arquitectura General {#arquitectura}
+
+### **¿Qué construimos?**
+Una aplicación **full-stack** que conecta:
+- **Frontend:** Next.js + TypeScript + React Query
+- **Backend:** Spring Boot + DynamoDB
+- **Base de Datos:** DynamoDB Local con índices GSI optimizados
+
+### **¿Cómo se comunican?**
+```
+┌─────────────────┐    HTTP/REST    ┌─────────────────┐    AWS SDK    ┌─────────────────┐
+│                 │  ──────────────> │                 │ ──────────────> │                 │
+│  FRONTEND       │                 │  BACKEND        │                │  DYNAMODB       │
+│  (Next.js)      │ <────────────── │  (Spring Boot)  │ <────────────── │  (Local)        │
+│  Port: 3000     │    JSON/JWT     │  Port: 8080     │    Queries     │  Port: 8000     │
+└─────────────────┘                 └─────────────────┘                 └─────────────────┘
+```
+
+---
+
+## 🔧 Configuración Base {#configuracion-base}
+
+### **PASO 1: Configuración del Entorno**
+
+#### **Variables de entorno (`.env.local`):**
+```env
+# URLs de los microservicios
+NEXT_PUBLIC_CLIENT_SERVICE_URL=http://localhost:8080
+NEXT_PUBLIC_MERCHANT_SERVICE_URL=http://localhost:8081
+
+# Configuración de desarrollo
+NODE_ENV=development
+```
+
+**¿Para qué sirve?**
+- Define las URLs base de nuestros servicios backend
+- Permite cambiar fácilmente entre desarrollo/producción
+- Centraliza la configuración en un solo lugar
+
+---
+
+## 🌐 Sistema de Comunicación HTTP {#comunicacion-http}
+
+### **PASO 2: Cliente HTTP con Axios**
+
+#### **Archivo: `src/common/utils/httpClient.ts`**
+```typescript
+import axios from 'axios';
+
+// Cliente específico para el servicio de clientes
+export const clientServiceClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_CLIENT_SERVICE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Cliente específico para el servicio de merchants
+export const merchantServiceClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_MERCHANT_SERVICE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+```
+
+**¿Para qué sirve este archivo?**
+- **Centraliza** la configuración de HTTP
+- **Separa** los clientes por microservicio
+- **Configura** timeouts y headers por defecto
+- **Facilita** interceptors para JWT (futuro)
+
+### **PASO 3: Configuración de Endpoints**
+
+#### **Archivo: `src/common/utils/apiConfig.ts`**
+```typescript
+export const API_ENDPOINTS = {
+  CLIENTS: {
+    CREATE: '/clients',                                 // POST
+    GET_BY_ID: (id: number) => `/clients/${id}`,      // GET
+    GET_BY_EMAIL: '/clients/email',                   // GET ?email=...
+    FIND_BY_NAME: '/clients/name',                    // GET ?name=...
+    UPDATE: (id: number) => `/clients/${id}`,         // PUT
+    HEALTH: '/health',                                // GET
+  },
+  MERCHANTS: {
+    CREATE: '/clients',                               // POST
+    GET_BY_ID: (cId: number, mId: number) => 
+      `/clients/${cId}/merchants/${mId}`,            // GET
+    // ... más endpoints
+  },
+};
+```
+
+**¿Para qué sirve este archivo?**
+- **Centraliza** todas las rutas API
+- **Evita** hardcodear URLs en componentes
+- **Facilita** cambios de endpoints
+- **Mejora** mantenibilidad del código
+
+---
+
+## 📊 Gestión de Estado y Datos {#gestion-estado}
+
+### **PASO 4: React Query Provider**
+
+#### **Archivo: `src/common/providers/ReactQueryProvider.tsx`**
+```typescript
+'use client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useState } from 'react';
+
+export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000, // 1 minuto
+        retry: 2,
+      },
+    },
+  }));
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+```
+
+**¿Para qué sirve este archivo?**
+- **Gestiona** el estado global de las peticiones HTTP
+- **Cachea** automáticamente las respuestas del servidor
+- **Reintenta** peticiones fallidas
+- **Sincroniza** datos entre componentes
+- **Proporciona** herramientas de desarrollo
+
+### **PASO 5: Servicios de Datos**
+
+#### **Archivo: `src/service/src/clientMerchantService.ts`**
+```typescript
+import { clientServiceClient } from '@/common/utils/httpClient';
+import { API_ENDPOINTS } from '@/common/utils/apiConfig';
+
+export const ClientService = {
+  // Crear cliente
+  async create(clientData: any) {
+    const response = await clientServiceClient.post(
+      API_ENDPOINTS.CLIENTS.CREATE, 
+      clientData
+    );
+    return response.data;
+  },
+
+  // Obtener cliente por ID
+  async getById(id: number) {
+    const response = await clientServiceClient.get(
+      API_ENDPOINTS.CLIENTS.GET_BY_ID(id)
+    );
+    return response.data;
+  },
+
+  // Buscar cliente por email
+  async getByEmail(email: string) {
+    const response = await clientServiceClient.get(
+      `${API_ENDPOINTS.CLIENTS.GET_BY_EMAIL}?email=${email}`
+    );
+    return response.data;
+  },
+  // ... más métodos
+};
+```
+
+**¿Para qué sirve este archivo?**
+- **Abstrae** las llamadas HTTP del backend
+- **Transforma** datos si es necesario
+- **Maneja** errores de comunicación
+- **Proporciona** una API limpia a los componentes
+
+### **PASO 6: Hooks Personalizados**
+
+#### **Archivo: `src/common/hooks/useClientMerchantApi.ts`**
+```typescript
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ClientService } from '@/service/src/clientMerchantService';
+
+// Hook para obtener cliente por ID
+export const useClient = (id: number) => {
+  return useQuery({
+    queryKey: ['client', id],
+    queryFn: () => ClientService.getById(id),
+    enabled: !!id, // Solo ejecutar si hay ID
+  });
+};
+
+// Hook para crear cliente
+export const useCreateClient = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ClientService.create,
+    onSuccess: () => {
+      // Invalidar cache para recargar datos
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+    },
+  });
+};
+```
+
+**¿Para qué sirven estos hooks?**
+- **Simplifican** el uso de React Query en componentes
+- **Gestionan** automáticamente loading, error y success
+- **Invalidan** cache cuando es necesario
+- **Reutilizan** lógica entre componentes
+
+---
+
+## 🎨 Componentes de Interfaz {#componentes-interfaz}
+
+### **PASO 7: Arquitectura Hexagonal en Frontend**
+
+Organizamos los componentes siguiendo **arquitectura hexagonal**:
+
+```
+src/common/components/ComponenteEjemplo/
+├── delivery/                    # 🎨 Capa de Presentación
+│   ├── index.tsx               # Componente principal
+│   ├── interface.d.ts          # Tipos TypeScript
+│   └── components/             # Subcomponentes UI
+│       ├── formulario.tsx
+│       ├── resultados.tsx
+│       └── acciones.tsx
+└── infrastructure/             # 🔧 Capa de Infraestructura
+    ├── operaciones.ts          # Lógica de negocio
+    └── transformaciones.ts     # Mapeo de datos
+```
+
+### **PASO 8: Componente de Creación de Cliente**
+
+#### **Archivo: `src/common/components/CreateClientForm/delivery/index.tsx`**
+```typescript
+'use client';
+import React, { useState } from 'react';
+import { createClientWithJWT } from '../infrastructure/clientCreationOperations';
+import type { ClientFormData, CreateClientResult } from './interface';
+
+const CreateClientForm: React.FC = () => {
+  const [formData, setFormData] = useState<ClientFormData>({
+    name: '',
+    surname: '',
+    email: '',
+    // ... más campos
+  });
+  
+  const [logs, setLogs] = useState<string[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreating(true);
+    
+    const result = await createClientWithJWT(formData, (message) => {
+      setLogs(prev => [...prev, message]);
+    });
+    
+    if (result.success) {
+      // Cliente creado exitosamente
+    }
+    
+    setIsCreating(false);
+  };
+
+  return (
+    <div className="card">
+      <h2>Crear Cliente</h2>
+      <form onSubmit={handleSubmit}>
+        {/* Campos del formulario */}
+      </form>
+      {/* Logs de debugging */}
+    </div>
+  );
+};
+```
+
+**¿Para qué sirve este componente?**
+- **Presenta** interfaz para crear clientes
+- **Valida** datos del formulario
+- **Muestra** progreso y logs de la operación
+- **Maneja** estados de loading y error
+
+#### **Archivo: `src/common/components/CreateClientForm/infrastructure/clientCreationOperations.ts`**
+```typescript
+import { clientServiceClient } from '@/common/utils/httpClient';
+
+export const createClientWithJWT = async (
+  clientData: ClientFormData,
+  onLog: (message: string) => void
+): Promise<CreateClientResult> => {
+  onLog('🚀 Iniciando creación de cliente...');
+
+  try {
+    // 1. Generar JWT
+    onLog('🔑 Solicitando JWT al backend...');
+    const jwtResponse = await clientServiceClient.post(
+      '/api/auth/generate-token-client', 
+      clientData
+    );
+    const jwt = jwtResponse.data.token;
+    
+    // 2. Transformar datos para DynamoDB
+    const clientDataForCreation = transformClientForCreation(clientData);
+    onLog(`📋 Datos transformados: ${JSON.stringify(clientDataForCreation)}`);
+    
+    // 3. Crear cliente
+    onLog('👤 Creando cliente con JWT...');
+    const response = await clientServiceClient.post('/clients', clientDataForCreation, {
+      headers: { 'Authorization': `Bearer ${jwt}` }
+    });
+    
+    if (response.status === 201) {
+      onLog('✅ Cliente creado exitosamente');
+      return { success: true, client: response.data };
+    }
+    
+  } catch (error) {
+    onLog(`❌ Error: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+```
+
+**¿Para qué sirve este archivo?**
+- **Orquesta** el proceso completo de creación
+- **Genera** JWT automáticamente
+- **Transforma** datos para DynamoDB (campos GSI)
+- **Proporciona** logs detallados para debugging
+
+### **PASO 9: Componente de Búsqueda por Email**
+
+#### **Archivo: `src/common/components/GetClientByEmail/delivery/index.tsx`**
+```typescript
+'use client';
+import React, { useState } from 'react';
+import { searchClientByEmail } from '../infrastructure/clientSearchOperations';
+
+const GetClientByEmail: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [client, setClient] = useState(null);
+  const [logs, setLogs] = useState([]);
+  
+  const handleSearch = async () => {
+    const result = await searchClientByEmail(email, (message) => {
+      setLogs(prev => [...prev, message]);
+    });
+    
+    if (result.success) {
+      setClient(result.data);
+    }
+  };
+
+  return (
+    <div className="card">
+      <h2>🔍 Buscar Cliente por Email</h2>
+      <div>
+        <input 
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="cliente@email.com"
+        />
+        <button onClick={handleSearch}>Buscar</button>
+      </div>
+      {client && <div>Cliente encontrado: {client.name}</div>}
+    </div>
+  );
+};
+```
+
+**¿Para qué sirve este componente?**
+- **Busca** clientes usando el índice GSI_Email de DynamoDB
+- **Muestra** resultados en tiempo real
+- **Maneja** casos de "no encontrado"
+
+---
+
+## 🔄 Flujo Completo de Datos {#flujo-datos}
+
+### **Ejemplo: Crear un Cliente**
+
+```
+1. USUARIO rellena formulario
+   └── CreateClientForm/delivery/index.tsx
+
+2. FRONTEND valida datos
+   └── ClientFormData interface
+
+3. FRONTEND llama a infrastructure
+   └── createClientWithJWT()
+
+4. INFRASTRUCTURE genera JWT
+   ├── POST /api/auth/generate-token-client
+   └── Recibe token JWT
+
+5. INFRASTRUCTURE transforma datos
+   ├── transformClientForCreation()
+   ├── Añade campos GSI: GIndex2Pk, GSI_PK, GSI_Name
+   └── Formatea datos para DynamoDB
+
+6. INFRASTRUCTURE envía al backend
+   ├── POST /clients + JWT header
+   └── Datos con campos GSI incluidos
+
+7. BACKEND (Spring Boot) procesa
+   ├── Valida JWT
+   ├── ClientMapper mapea datos
+   └── Guarda en DynamoDB con campos GSI
+
+8. DYNAMODB almacena
+   ├── Tabla principal: PK, SK + datos
+   ├── GSI_Email: GIndex2Pk para búsqueda por email
+   └── GSI_Name: GSI_PK + GSI_Name para búsqueda por nombre
+
+9. BACKEND responde
+   └── 201 Created + datos del cliente
+
+10. FRONTEND muestra resultado
+    ├── Logs de debugging
+    ├── Confirmación de éxito
+    └── Datos del cliente creado
+```
+
+### **Ejemplo: Buscar Cliente por Email**
+
+```
+1. USUARIO introduce email
+   └── GetClientByEmail/delivery/index.tsx
+
+2. FRONTEND llama a infrastructure
+   └── searchClientByEmail()
+
+3. INFRASTRUCTURE genera JWT
+   └── Mismo proceso que creación
+
+4. INFRASTRUCTURE busca cliente
+   ├── GET /clients/email?email=xxx + JWT
+   └── Backend usa GSI_Email de DynamoDB
+
+5. DYNAMODB consulta índice
+   ├── GSI_Email busca por GIndex2Pk = email
+   └── Retorna datos si existe
+
+6. BACKEND responde
+   ├── 200 + datos del cliente (si existe)
+   └── 404 + mensaje (si no existe)
+
+7. FRONTEND muestra resultado
+   ├── Datos del cliente encontrado
+   ├── Mensaje "no encontrado"
+   └── Logs de la operación
+```
+
+---
+
+## ✅ Estado Actual {#estado-actual}
+
+### **🎉 ¿Qué hemos conseguido?**
+
+✅ **Arquitectura robusta** con separación de responsabilidades  
+✅ **Comunicación HTTP** configurable y reutilizable  
+✅ **Gestión de estado** con React Query (cache, loading, error)  
+✅ **Componentes modulares** siguiendo arquitectura hexagonal  
+✅ **Sistema de logging** para debugging en tiempo real  
+✅ **Integración DynamoDB** con índices GSI optimizados  
+✅ **Autenticación JWT** automática y transparente  
+✅ **Transformación de datos** para compatibilidad backend  
+✅ **Manejo de errores** completo en toda la aplicación  
+✅ **Tipos TypeScript** para seguridad de datos
+
+### **🏗️ Arquitectura Final**
+- **Frontend:** Next.js + TypeScript + React Query + Tailwind
+- **Backend:** Spring Boot + MapStruct + DynamoDB + JWT
+- **Base de Datos:** DynamoDB con GSI_Email y GSI_Name optimizados
+
+### **🎯 Funcionalidades Operativas**
+
+#### **✅ Gestión de Clientes:**
+- **Crear cliente** con validación y transformación automática
+- **Buscar por email** usando índice GSI_Email optimizado
+- **Buscar por ID** con respuesta rápida
+- **Logs en tiempo real** para debugging y monitoreo
+
+#### **✅ Sistema de Autenticación:**
+- **JWT automático** generado para cada operación
+- **Headers configurados** automáticamente
+- **Manejo de errores** de autenticación
+
+#### **✅ Optimización de Base de Datos:**
+- **Índices GSI** para búsquedas eficientes:
+  - `GSI_Email`: Búsqueda por email (GIndex2Pk)
+  - `GSI_Name`: Búsqueda por nombre (GSI_PK + GSI_Name)
+  - `GSI_SK`: Búsquedas adicionales por SK
+
+#### **✅ Experiencia de Desarrollo:**
+- **Hot reload** en desarrollo
+- **Logs detallados** en consola y UI
+- **Manejo de errores** con mensajes claros
+- **Tipos TypeScript** para prevenir errores
+
+### **🚀 ¿Qué sigue?**
+
+**Tu aplicación ya tiene una base sólida para:**
+- ✅ **Escalar** añadiendo más entidades (Merchants, Users, etc.)
+- ✅ **Optimizar** con más índices GSI según necesidades
+- ✅ **Expandir** con más funcionalidades CRUD
+- ✅ **Mejorar UX** con notificaciones, validaciones avanzadas
+- ✅ **Añadir testing** unitario e integración
+
+---
+
+## 🔧 Configuración del Backend Spring Boot (Referencia)
 
 ### 1. Añadir CORS Configuration a AMBOS microservicios
 Copia el archivo `docs/CorsConfig.java` a cada proyecto Spring Boot:

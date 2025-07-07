@@ -1,6 +1,7 @@
 import TestBackendConnection from "@/common/components/TestBackendConnection";
 import CreateClientForm from "@/common/components/CreateClientForm/delivery";
 import GetBClientIDComponent from "@/common/components/GetBClientIDComponent/delivery";
+import GetClientByEmail from "@/common/components/GetClientByEmail/delivery";
 
 export default function Home() {
   return (
@@ -31,6 +32,11 @@ export default function Home() {
         {/* Get a client by ID */}
         <div className="gap-8 mb-8">
             <GetBClientIDComponent />
+        </div>
+
+        {/* Get a client by ID */}
+        <div className="gap-8 mb-8">
+            <GetClientByEmail />
         </div>
 
         {/* Development Section - Tests y Debugging */}
