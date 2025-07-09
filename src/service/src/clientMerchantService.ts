@@ -4,6 +4,7 @@ import {
   get,
   post,
   put,
+  del,
   ApiResponse
 } from '../../common/utils/httpClient';
 import { API_ENDPOINTS } from '../../common/utils/apiConfig';
@@ -17,7 +18,7 @@ import {
   MerchantInputUpdateDto
 } from '../../common/types/entities';
 
-// Servicio de Clientes - Basado en tu ClientController real
+// Servicio de Clientes - 
 export const ClientService = {
   // POST /clients - Crear cliente
   create: async (clientData: ClientInputDto): Promise<ApiResponse<ClientOutputDto>> => {
@@ -74,6 +75,14 @@ export const ClientService = {
     return get<ApiResponse<boolean>>(
       clientServiceClient,
       API_ENDPOINTS.CLIENTS.MERCHANT_EXISTS(merchantId)
+    );
+  },
+
+  // DELETE /clients/{id} - Eliminar cliente 
+  deleteClient: async (id: string | number): Promise<void> => {
+    return del<void>(  
+      clientServiceClient,
+      API_ENDPOINTS.CLIENTS.DELETE(id)
     );
   },
 

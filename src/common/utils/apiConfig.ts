@@ -27,6 +27,9 @@ export const API_ENDPOINTS = {
     
     // GET /clients/merchant-exists/{merchantId} - Verificar existencia de merchant
     MERCHANT_EXISTS: (merchantId: string | number) => `/clients/merchant-exists/${merchantId}`,
+
+    // DELETE /clients/{id} - Eliminar cliente
+    DELETE: (id: string | number) => `/clients/${id}`,
     
     // Health check
     HEALTH: '/health',

@@ -31,18 +31,18 @@ export const getClientById = async (
     const jwt = jwtResponse.data.token;
     onLog(`✅ JWT generado correctamente`);
 
-    // 🔍 Buscar cliente - USAR ENDPOINT SIMPLE
+    // 🔍 Buscar cliente
     onLog(`🔍 Consultando endpoint: GET /clients/${id}`);
     
     const response = await clientServiceClient.get(
-      API_ENDPOINTS.CLIENTS.GET_BY_ID(id), // ✅ USAR VERSION SIMPLE
+      API_ENDPOINTS.CLIENTS.GET_BY_ID(id),
       {
         headers: { 
           'Authorization': `Bearer ${jwt}`,
           'Content-Type': 'application/json'
         },
         timeout: 5000,
-        validateStatus: () => true // ✅ Aceptar cualquier status
+        validateStatus: () => true
       }
     );
 
@@ -51,7 +51,6 @@ export const getClientById = async (
     if (response.status === 200) {
       onLog(`✅ Cliente encontrado exitosamente`);
       onLog(`👤 Datos: ${JSON.stringify(response.data, null, 2)}`);
-
       return { success: true, data: response.data };
     } else if (response.status === 404) {
       onLog(`❌ Cliente no encontrado con ID: ${id}`);
@@ -81,17 +80,18 @@ export const getClientById = async (
   }
 };
 
-export const updateClientById = async (
+// ✅ FUNCIÓN CORREGIDA: deleteClientById
+export const deleteClientById = async (
   id: string,
-  clientData: any,
-  onLog: (message: string) => void
-): Promise<{ success: boolean; data?: any; error?: string }> => {
-  onLog(`🔄 Actualizando cliente ID: ${id}`);
+  onLog: (message: string) => void  // ✅ CORREGIDO: No necesita clientData
+): Promise<{ success: boolean; error?: string }> => {
+  onLog(`🗑️ Eliminando cliente con ID: ${id}`);
 
   try {
-    // 🔑 Generar JWT
-    onLog('🔑 Generando JWT para actualización...');
-    
+    // 🔑 Generar JWT para eliminación
+    onLog('🔑 Generando JWT para eliminación...');
+
+    // ✅ CORREGIDO: Usar DEFAULT_JWT_CLIENT_DATA
     const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
     
     if (jwtResponse.status !== 200) {
@@ -100,27 +100,15 @@ export const updateClientById = async (
     }
 
     const jwt = jwtResponse.data.token;
-    onLog(`✅ JWT generado para actualización`);
+    onLog(`✅ JWT generado correctamente`);
 
-    // 📊 Preparar datos para actualización
-    const updateData = {
-      name: clientData.name,
-      surname: clientData.surname,
-      email: clientData.email,
-      phone: clientData.phone,
-      cifNifNie: clientData.cifNifNie,
-      age: clientData.age
-    };
+    // 🗑️ Eliminar cliente
+    onLog(`🗑️ Enviando DELETE a: /clients/${id}`);
 
-    onLog(`📋 Datos a enviar: ${JSON.stringify(updateData, null, 2)}`);
-    onLog(`🔄 Enviando PUT a: /clients/${id}`);
-
-    // 🔄 Actualizar cliente
-    const response = await clientServiceClient.put(
-      API_ENDPOINTS.CLIENTS.UPDATE(id),
-      updateData,
+    const response = await clientServiceClient.delete(
+      API_ENDPOINTS.CLIENTS.DELETE(id),
       {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${jwt}`,
           'Content-Type': 'application/json'
         },
@@ -129,26 +117,30 @@ export const updateClientById = async (
       }
     );
 
-    onLog(`📡 Respuesta actualización: ${response.status} - ${response.statusText}`);
+    onLog(`📡 Respuesta del servidor: ${response.status} - ${response.statusText}`);
 
-    if (response.status === 200) {
-      onLog(`✅ Cliente actualizado exitosamente`);
-      onLog(`👤 Datos actualizados: ${JSON.stringify(response.data, null, 2)}`);
-      return { success: true, data: response.data };
+    // ✅ CORREGIDO: Estructura if-else correcta
+    if (response.status === 204) {
+      onLog(`✅ Cliente eliminado exitosamente`);
+      return { success: true };
     } else if (response.status === 404) {
-      onLog(`❌ Cliente no encontrado para actualizar: ${id}`);
-      return { success: false, error: `Cliente no encontrado: ${id}` };
+      onLog(`❌ Cliente no encontrado con ID: ${id}`);
+      return { success: false, error: `Cliente no encontrado con ID: ${id}` };
     } else if (response.status === 400) {
-      onLog(`❌ Datos inválidos para actualización`);
-      onLog(`📋 Error: ${JSON.stringify(response.data, null, 2)}`);
-      return { success: false, error: `Datos inválidos: ${response.data?.message || 'Bad Request'}` };
+      onLog(`❌ Bad Request (400) - Datos inválidos o ID mal formateado`);
+      onLog(`📋 Respuesta del servidor: ${JSON.stringify(response.data, null, 2)}`);
+      return { success: false, error: `ID inválido o datos mal formateados: ${response.data?.message || 'Bad Request'}` };
+    } else if (response.status === 401) {
+      onLog(`❌ No autorizado (401) - JWT inválido`);
+      return { success: false, error: 'Token JWT inválido o expirado' };
     } else {
-      onLog(`❌ Error actualizando: ${response.status}`);
-      return { success: false, error: `Error: ${response.status}` };
+      onLog(`❌ Error del servidor: ${response.status} - ${response.statusText}`);
+      onLog(`📋 Respuesta: ${JSON.stringify(response.data, null, 2)}`);
+      return { success: false, error: `Error del servidor: ${response.status}` };
     }
 
   } catch (error: any) {
-    onLog(`❌ Error de conexión en actualización: ${error.message}`);
+    onLog(`❌ Error de conexión en eliminación: ${error.message}`);
     
     if (error.response) {
       onLog(`📡 Status: ${error.response.status}`);

@@ -115,6 +115,22 @@ export const useUpdateClient = () => {
   });
 };
 
+//Hook para eliminar un cliente
+export const useDeleteClient = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => ClientService.deleteClient(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CLIENTS] });
+      console.log('Cliente eliminado exitosamente');
+    },
+    onError: (error: any) => {
+      console.error('Error eliminando cliente:', error);
+    },
+  });
+};
+
 // ===================
 // HOOKS PARA MERCHANTS
 // ===================

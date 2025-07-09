@@ -90,18 +90,3 @@ export const searchClientById = async (
         };
     }
 };
-/*
-// Función para validar ID de cliente
-export const validateClientId = (clientId: string): { isValid: boolean; error?: string } => {
-    const trimmedId = clientId.trim();
-    
-    if (!trimmedId) {
-        return { 
-            isValid: false, 
-            error: 'Por favor, introduce un ID de cliente válido' 
-        };
-    }
-    
-    return { isValid: true };
-};
-*/

@@ -86,8 +86,7 @@ const GetClientByName: React.FC = () => {
             setIsCreating(false);
         }
     }
- 
-    
+  
     return (
         <div className="card">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">👤 Buscar Cliente por nombre (con JWT automático)</h2>

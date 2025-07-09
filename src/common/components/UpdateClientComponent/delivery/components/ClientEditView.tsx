@@ -7,6 +7,7 @@ interface ClientEditViewProps {
   currentClient: ClientUpadateData;
   updatedClient: ClientUpadateData;
   isUpdating: boolean;
+  showInstructions: boolean;  // ✅ NUEVA PROP
   onInputChange: (field: keyof ClientUpadateData, value: string | number) => void;
   onUpdate: () => void;
   onReset: () => void;
@@ -16,6 +17,7 @@ const ClientEditView: React.FC<ClientEditViewProps> = ({
   currentClient,
   updatedClient,
   isUpdating,
+  showInstructions,  // ✅ NUEVA PROP
   onInputChange,
   onUpdate,
   onReset
@@ -51,16 +53,37 @@ const ClientEditView: React.FC<ClientEditViewProps> = ({
         />
       </div>
 
-      {/* ✅ Información de ayuda */}
-      <div className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-        <p className="font-medium text-yellow-800 mb-1">💡 Instrucciones:</p>
-        <ul className="text-yellow-700 space-y-1">
-          <li>• <strong>Izquierda:</strong> Datos actuales del cliente (solo lectura)</li>
-          <li>• <strong>Derecha:</strong> Modifica los campos que quieras actualizar</li>
-          <li>• Los campos marcados con * son obligatorios</li>
-          <li>• Haz clic en "Actualizar Cliente" para guardar los cambios</li>
-        </ul>
+      {/* ✅ CONDICIONAL: Mostrar instrucciones solo cuando showInstructions es true */}
+      <div className={`transition-all duration-500 ${
+        showInstructions 
+          ? 'opacity-100 max-h-40' 
+          : 'opacity-0 max-h-0 overflow-hidden'
+      }`}>
+        <div className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+          <p className="font-medium text-yellow-800 mb-1">💡 Instrucciones:</p>
+          <ul className="text-yellow-700 space-y-1">
+            <li>• <strong>Izquierda:</strong> Datos actuales del cliente (solo lectura)</li>
+            <li>• <strong>Derecha:</strong> Modifica los campos que quieras actualizar</li>
+            <li>• Los campos marcados con * son obligatorios</li>
+            <li>• Haz clic en "Actualizar Cliente" para guardar los cambios</li>
+          </ul>
+        </div>
       </div>
+
+      {/* ✅ OPCIONAL: Mostrar estado de actualización */}
+      {isUpdating && (
+        <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+          <div className="flex items-center gap-2">
+            <span className="animate-spin">🔄</span>
+            <p className="font-medium text-blue-800">
+              Actualizando cliente...
+            </p>
+          </div>
+          <p className="text-blue-700 mt-1">
+            Por favor, espera mientras se guardan los cambios en la base de datos.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

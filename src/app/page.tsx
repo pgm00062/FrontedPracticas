@@ -1,9 +1,6 @@
 import TestBackendConnection from "@/common/components/TestBackendConnection";
-import CreateClientForm from "@/common/components/CreateClientForm/delivery";
-import GetBClientIDComponent from "@/common/components/GetBClientIDComponent/delivery";
-import GetClientByEmail from "@/common/components/GetClientByEmail/delivery";
-import GetClientByName from "@/common/components/GetClientByName/delivery";
-import UpdateClientComponent from "@/common/components/UpdateClientComponent/delivery";
+import ButtonMerchantService from "@/common/components/ButtonMerchantService";
+import ButtonClientService from "@/common/components/ButtonClientService";
 
 export default function Home() {
   return (
@@ -26,29 +23,14 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Create Client Form */}
-        <div className="gap-8 mb-8">
-            <CreateClientForm />
+        {/* Button to Merchant Service */}
+        <div className="mt-12 border-t border-gray-200 pt-8 ">
+            <ButtonMerchantService />
         </div>
 
-        {/* Get a client by ID */}
-        <div className="gap-8 mb-8">
-            <GetBClientIDComponent />
-        </div>
-
-        {/* Get a client by ID */}
-        <div className="gap-8 mb-8">
-            <GetClientByEmail />
-        </div>
-
-        {/* Get a client by name */}
-        <div className="gap-8 mb-8">
-            <GetClientByName />
-        </div>
-
-        {/* Get a client by name */}
-        <div className="gap-8 mb-8">
-            <UpdateClientComponent />
+        {/* Button to Client Service */}
+        <div className="mt-12 border-t border-gray-200 pt-8 ">
+            <ButtonClientService />
         </div>
 
         {/* Development Section - Tests y Debugging */}

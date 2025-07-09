@@ -20,6 +20,7 @@ export interface UpdateClientState{
     //estados
     logs: string[];
     result: any; 
+    showInstructions: boolean; // Para mostrar u ocultar instrucciones
 }
 
 export interface ClientUpdateRequest{
