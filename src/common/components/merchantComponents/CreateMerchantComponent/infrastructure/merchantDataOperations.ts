@@ -1,8 +1,8 @@
-import { MerchantType, type MerchantFormData } from '../delivery/interface';
-
+import {MerchantType} from '../infrastructure/merchant.enum';
+import type { MerchantFormData } from '../delivery/interface';
 // Datos por defecto para el formulario
 export const DEFAULT_MERCHANT_DATA: MerchantFormData = {
-  idClient: '12345', // ID de cliente por defecto  
+  clientId: '123545', // ID de cliente por defecto  
   name: 'Debug Merchant',
   address: 'Calle Falsa 123',
   merchantType: MerchantType.MERCHANT_TYPE_PERSONAL_SERVICES
@@ -11,8 +11,8 @@ export const DEFAULT_MERCHANT_DATA: MerchantFormData = {
 // Función para generar cliente aleatorio
 export const generateRandomMerchant = (): MerchantFormData => {
   return {
-    idClient: `${Math.floor(Math.random() * 10000)}`, // ID aleatorio
-    name: `Cliente Test ${Math.floor(Math.random() * 1000)}`,
+    clientId: `12324`, // ID aleatorio
+    name: `Comerciante Test ${Math.floor(Math.random() * 1000)}`,
     address: `Calle Test ${Math.floor(Math.random() * 100)}`,
     merchantType: MerchantType.MERCHANT_TYPE_PERSONAL_SERVICES
   };
@@ -30,7 +30,7 @@ export const transformMerchantForCreation = (
 ) => {
   return {
     // 🔹 Campos de negocio
-    idClient:data.idClient,
+    clientId:data.clientId,
     name: data.name,
     address: data.address,
     merchantType: data.merchantType,
@@ -46,7 +46,6 @@ export const transformMerchantForCreation = (
 // 🔹 Debug para inspeccionar datos transformados
 export const logMerchantDataTransformation = (
   original: MerchantFormData,
-  clientId: string
 ): void => {
   const transformed = transformMerchantForCreation(original);
   console.log('📋 Datos originales:', original);

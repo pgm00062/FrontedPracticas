@@ -69,7 +69,7 @@ const GetByIdClientIDComponent: React.FC = () => {
 
     return (
         <div className="card">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">👤 Buscar Cliente por ID (con JWT automático)</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">🆔 Buscar Cliente por ID (con JWT automático)</h2>
             
             <div className="space-y-4">
                 {/* ✅ Subcomponente: Formulario de búsqueda */}

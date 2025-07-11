@@ -28,6 +28,22 @@ const ClientFormFields: React.FC<MerchantFormFieldsProps> = ({
       
       <div className="bg-gray-50 p-4 rounded-md space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div>
+            <label htmlFor="clientId" className="block text-sm font-medium text-gray-700 mb-1">
+              ID Cliente *
+            </label>
+            <input
+              id="clientId"
+              type="text"
+              value={merchantData.clientId}
+              onChange={(e) => onInputChange('clientId', e.target.value)}
+              disabled={isDisabled}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              placeholder="Ej: 1223456"
+            />
+          </div>
+
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nombre *

@@ -25,28 +25,44 @@ export const createMerchantWithJWT = async (
         onLog(`✅ JWT recibido del backend: ${jwtResponse.status}`);
 
         const jwt = jwtResponse.data.token;
-        onLog(`🎫 JWT generado correctamente`);
-
+        onLog(`📦 JWT generado (backend): ${jwt}`);
         // ✅ Transformar datos con todos los campos GSI incluidos
         const merchantDataForCreation = transformMerchantForCreation(testMerchantData);
         
         // ✅ Log de debugging para ver la transformación
-        logMerchantDataTransformation(testMerchantData, merchantDataForCreation.idClient);
+        logMerchantDataTransformation(testMerchantData);
 
         // Crear comerciante
         onLog('👤 Creando comerciante con JWT...');
 
-        const createResponse = await merchantServiceClient.post('/merchants', merchantDataForCreation, {
+
+        onLog('➡️ Enviando merchant al backend con JWT:');
+        onLog(`🔐 JWT: ${jwt}`);
+        onLog(`📋 Datos del comerciante para creación: ${JSON.stringify(merchantDataForCreation)}`);
+
+        const url = '/clients';
+        const headers = {
+            'Authorization': `Bearer ${jwt}`,
+            'Content-Type': 'application/json'
+        };
+
+        onLog(`🌐 URL destino: ${merchantServiceClient.defaults.baseURL}${url}`);
+        onLog(`📨 Headers enviados: ${JSON.stringify(headers, null, 2)}`);
+        onLog(`📦 Payload enviado: ${JSON.stringify(merchantDataForCreation, null, 2)}`);
+
+        const createResponse = await merchantServiceClient.post('/clients', merchantDataForCreation, {
             headers: {
                 'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json'
             },
             timeout: 10000,
             validateStatus: () => true
+            
         });
-
+        
         onLog(`📊 Respuesta del servidor: Status ${createResponse.status}`);
         onLog(`📊 Datos recibidos: ${JSON.stringify(createResponse.data)}`);
+        console.log('📦 JWT generado (frontend):', jwt);
 
         if (createResponse.status === 201) {
             onLog(`✅ Comerciante creado exitosamente`);
@@ -55,14 +71,33 @@ export const createMerchantWithJWT = async (
                 merchant: createResponse.data,
                 jwt: jwt
             };
-        } else {
-            onLog(`❌ Error al crear comerciante: ${createResponse.statusText}`);
+        } else if (createResponse.status === 409) {
+            onLog(`❌ Comerciante ya existe: ${createResponse.status}`);
             return {
                 success: false,
-                error: createResponse.statusText,
-                jwt: jwt
+                error: 'Comerciante ya existe con esos datos '
+            };
+        } else if (createResponse.status === 400) {
+            onLog(`❌ Datos inválidos: ${createResponse.status}`);
+            const errorMsg = createResponse.data?.error || 'Datos de entrada no válidos';
+            return {
+                success: false,
+                error: `Datos inválidos: ${errorMsg}`
+            };
+        } else if (createResponse.status === 500) {
+            onLog(`❌ Error interno del servidor: ${createResponse.status}`);
+            return {
+                success: false,
+                error: 'Error interno del servidor. Inténtalo de nuevo.'
+            };
+        } else {
+            onLog(`❌ Error inesperado: ${createResponse.status}`);
+            return {
+                success: false,
+                error: `Error inesperado: ${createResponse.status}`
             };
         }
+
     } catch (error) {
         console.error('Error al crear comerciante:', error);
         return {

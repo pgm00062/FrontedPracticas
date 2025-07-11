@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReactQueryProvider from "../common/providers/ReactQueryProvider";
+import { SidebarProvider } from "@/common/components/SharedComponents/SideBarNavegation/delivery/components/sideBarContext";
+import LayoutWithSidebar from "./layoutSideBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,18 +23,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ReactQueryProvider>
-          {children}
+          <SidebarProvider>
+            <LayoutWithSidebar>{children}</LayoutWithSidebar>
+          </SidebarProvider>
         </ReactQueryProvider>
       </body>
     </html>
   );
 }
+
+

@@ -1,7 +1,4 @@
-export enum MerchantType {//cambiar a carpeta comun a todos los demas
-    MERCHANT_TYPE_PERSONAL_SERVICES,
-    MERCHANT_TYPE_FINANCIAL_SERVICES
-}
+import {MerchantType} from '../infrastructure/merchant.enum';
 
 export interface CreateMerchantComponentProps {
     className?: string;
@@ -11,7 +8,7 @@ export interface CreateMerchantComponentProps {
 }
 
 export interface MerchantFormData {
-    idClient: string; // Optional, used for creating a new merchant
+    clientId: string; 
     name: string;
     address: string;
     merchantType: MerchantType; 

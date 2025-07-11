@@ -1,17 +1,12 @@
-import TestBackendConnection from "@/common/components/TestBackendConnection";
+import TestBackendConnection from "@/common/components/SharedComponents/TestBackendConnection";
 import ButtonMerchantService from "@/common/components/ButtonMerchantService";
 import ButtonClientService from "@/common/components/ButtonClientService";
+import HeaderComponent from '@/common/components/SharedComponents/HeaderComponen';
 
 export default function Home() {
   return (
-    <div className="container-page">
-      {/* Header/Navbar */}
-      <div className="navbar">
-        <div className="container-main">
-          <h1 className="heading-1 mb-0">Panel de Control</h1>
-          <p className="text-muted">Gestión de usuarios y conexiones</p>
-        </div>
-      </div>
+    <div >
+      <HeaderComponent />
 
       {/* Main Content */}
       <div className="container-main py-8">
@@ -43,9 +38,8 @@ export default function Home() {
           </div>
           
           <div className="gap-8 mb-8">
-            <TestBackendConnection />
+            <TestBackendConnection scope="all"/>
           </div>
-          
         </div>
       </div>
     </div>

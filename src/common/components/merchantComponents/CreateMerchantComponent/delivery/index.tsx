@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { MerchantFormData } from './interface';
-import { DEFAULT_MERCHANT_DATA } from '../infrastructure/merchantDataOperations';
-import { generateRandomMerchant } from '../infrastructure/merchantDataOperations';
+import { DEFAULT_MERCHANT_DATA,generateRandomMerchant } from '../infrastructure/merchantDataOperations';
 import { createMerchantWithJWT } from '../infrastructure/merchantCreationOperations';
 
 import MerchantFormFields from './components/merchantFormFields';
 import FormActions from './components/formActions';
 import ResultDisplay from './components/resultDisplay';
+import LogDisplay from './components/logDisplay';
 
 const CreateMerchantComponent: React.FC = () => {
 
@@ -64,7 +64,7 @@ const CreateMerchantComponent: React.FC = () => {
 
     return(
         <div className="card">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">👤 Crear Nuevo Cliente</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">👤 Crear Nuevo Comerciante</h2>
             
             <div className="space-y-6">
                 {/* ✅ Subcomponente: Campos del formulario */}
@@ -84,6 +84,8 @@ const CreateMerchantComponent: React.FC = () => {
 
                 {/* ✅ Subcomponente: Mostrar resultados */}
                 <ResultDisplay result={lastResult} />
+
+                <LogDisplay logs={logs} />
 
             </div>
         </div>
