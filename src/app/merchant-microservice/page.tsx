@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import CreateMerchantComponent from '@/common/components/merchantComponents/CreateMerchantComponent/delivery';
 import HeaderComponent from '@/common/components/SharedComponents/HeaderComponen';
 import TestBackendConnection from '@/common/components/SharedComponents/TestBackendConnection';
+import  GetByIdMerchantComponent  from '@/common/components/merchantComponents/GetByIdMerchantComponent/delivery';
 
 export default function MerchantPage() {
   const [merchants, setMerchants] = useState([]);
@@ -26,9 +27,14 @@ export default function MerchantPage() {
 
           {/* Create Client Form */}
           <div className="gap-8 mb-8">
-            <p>Antes del formulario</p>
               <CreateMerchantComponent />
           </div>
+
+          {/* Create Client Form */}
+          <div className="gap-8 mb-8">
+              <GetByIdMerchantComponent />
+          </div>
+
           <div className="gap-8 mb-8">
               <TestBackendConnection scope="merchant"/>
           </div>

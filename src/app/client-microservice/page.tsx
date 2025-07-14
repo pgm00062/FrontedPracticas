@@ -6,7 +6,7 @@ import SearchingClients from "@/common/components/clientComoponents/SearchingCli
 import HeaderComponent from '@/common/components/SharedComponents/HeaderComponen';
 import TestBackendConnection from "@/common/components/SharedComponents/TestBackendConnection";
 
-export default function Home() {
+export default function ClientPage() {
   return (
     <div >
       <HeaderComponent />

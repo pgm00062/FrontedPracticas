@@ -10,8 +10,8 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
     <>
       <Sidebar />
       <main
-        className={`transition-all duration-300 px-4 ${
-          isOpen ? 'md:ml-64' : 'mx-auto max-w-4xl'
+        className={`transition-all duration-300 px-4 
+          ${isOpen ? 'md:ml-64' : 'mx-auto max-w-5xl'
         }`}
       >
         {children}
