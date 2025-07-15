@@ -6,6 +6,8 @@ import CreateMerchantComponent from '@/common/components/merchantComponents/Crea
 import HeaderComponent from '@/common/components/SharedComponents/HeaderComponen';
 import TestBackendConnection from '@/common/components/SharedComponents/TestBackendConnection';
 import  GetByIdMerchantComponent  from '@/common/components/merchantComponents/GetByIdMerchantComponent/delivery';
+import GetByNameMerchantComponent from '@/common/components/merchantComponents/GetByNameMerchantComponent/delivery';
+import UpdateMerchantComponent from '@/common/components/merchantComponents/UpdateMerchantComponent/delivery';
 
 export default function MerchantPage() {
   const [merchants, setMerchants] = useState([]);
@@ -25,14 +27,24 @@ export default function MerchantPage() {
       <div className="container-main py-8">
 
 
-          {/* Create Client Form */}
+          {/* Create Merchant Form */}
           <div className="gap-8 mb-8">
               <CreateMerchantComponent />
           </div>
 
-          {/* Create Client Form */}
+          {/* Create Merchant Form */}
           <div className="gap-8 mb-8">
               <GetByIdMerchantComponent />
+          </div>
+
+          {/* Search Merchant by Name */}
+          <div className="gap-8 mb-8">
+              <GetByNameMerchantComponent />
+          </div>
+
+          {/* Update merchant by id */}
+          <div className="gap-8 mb-8">
+              <UpdateMerchantComponent />
           </div>
 
           <div className="gap-8 mb-8">

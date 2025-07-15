@@ -7,7 +7,7 @@ interface ClientEditViewProps {
   currentClient: ClientUpadateData;
   updatedClient: ClientUpadateData;
   isUpdating: boolean;
-  showInstructions: boolean;  // ✅ NUEVA PROP
+  showInstructions: boolean;  
   onInputChange: (field: keyof ClientUpadateData, value: string | number) => void;
   onUpdate: () => void;
   onReset: () => void;
@@ -17,7 +17,7 @@ const ClientEditView: React.FC<ClientEditViewProps> = ({
   currentClient,
   updatedClient,
   isUpdating,
-  showInstructions,  // ✅ NUEVA PROP
+  showInstructions,  
   onInputChange,
   onUpdate,
   onReset

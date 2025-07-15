@@ -53,3 +53,4 @@ const MerchantResultsList: React.FC<MerchantResultsListProps> = ({
     </div>
   );
 };
+export default MerchantResultsList;

@@ -4,6 +4,7 @@ import "./globals.css";
 import ReactQueryProvider from "../common/providers/ReactQueryProvider";
 import { SidebarProvider } from "@/common/components/SharedComponents/SideBarNavegation/delivery/components/sideBarContext";
 import LayoutWithSidebar from "./layoutSideBar";
+import PageTransitionWrapper from "@/common/components/SharedComponents/TransitionNavegation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ReactQueryProvider>
           <SidebarProvider>
-            <LayoutWithSidebar>{children}</LayoutWithSidebar>
+            <LayoutWithSidebar>
+              <PageTransitionWrapper>
+                  {children}
+              </PageTransitionWrapper>
+              </LayoutWithSidebar>
           </SidebarProvider>
         </ReactQueryProvider>
       </body>

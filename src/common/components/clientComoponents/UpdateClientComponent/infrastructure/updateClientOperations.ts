@@ -35,7 +35,7 @@ export const getClientById = async (
     onLog(`🔍 Consultando endpoint: GET /clients/${id}`);
     
     const response = await clientServiceClient.get(
-      API_ENDPOINTS.CLIENTS.GET_BY_ID(id), // ✅ USAR VERSION SIMPLE
+      API_ENDPOINTS.CLIENTS.GET_BY_ID(id), 
       {
         headers: { 
           'Authorization': `Bearer ${jwt}`,

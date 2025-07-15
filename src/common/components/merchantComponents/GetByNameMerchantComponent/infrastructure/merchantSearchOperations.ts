@@ -10,7 +10,7 @@ const DEFAULT_JWT_MERCHANT_DATA: JWTMerchantData = {
 
 export interface SearchResult {
     success: boolean;
-    data?: MerchantData;
+    data?: MerchantData[];
     error?: string;
     statusCode?: number;
 }
