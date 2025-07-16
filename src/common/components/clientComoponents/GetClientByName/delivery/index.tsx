@@ -10,6 +10,7 @@ import SearchActions from './components/searchActions';
 import ClientResultsList from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
+import { toast } from 'sonner';
 
 const GetClientByName: React.FC = () => {
 
@@ -40,6 +41,7 @@ const GetClientByName: React.FC = () => {
         if (clientName.trim()) {
             getClientByName(clientName.trim());
         } else {
+            toast.error('❌ Por favor, introduce un nombre de cliente válido');
             addLog('Por favor, introduce un nombre de cliente válido');
         }
     };
@@ -70,7 +72,7 @@ const GetClientByName: React.FC = () => {
                 setSearchResults(result.data);  // ✅ Guardar array completo
                 setSelectedClient(result.data[0] || null);  // ✅ Seleccionar el primero
                 setLastResult(result.data[0] || null);  // ✅ Para compatibilidad con componentes existentes
-                
+                toast.success(`✅ ${result.data.length} cliente(s) encontrado(s)`);
                 addLog(`✅ ${result.data.length} cliente(s) encontrado(s)`);
             } else {
                 setSearchResults([]);
@@ -78,6 +80,7 @@ const GetClientByName: React.FC = () => {
                 setLastResult(null);
             }
         } catch (error) {
+            toast.error(`❌ Error al buscar cliente: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             addLog(`❌ Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             setSearchResults([]);
             setSelectedClient(null);

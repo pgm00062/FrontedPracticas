@@ -5,6 +5,8 @@ import ReactQueryProvider from "../common/providers/ReactQueryProvider";
 import { SidebarProvider } from "@/common/components/SharedComponents/SideBarNavegation/delivery/components/sideBarContext";
 import LayoutWithSidebar from "./layoutSideBar";
 import PageTransitionWrapper from "@/common/components/SharedComponents/TransitionNavegation";
+import 'antd/dist/reset.css';
+import {Toaster} from 'sonner';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,6 +41,12 @@ export default function RootLayout({
               </LayoutWithSidebar>
           </SidebarProvider>
         </ReactQueryProvider>
+        <Toaster
+          richColors
+          position="top-right"
+          duration={3000}
+          closeButton
+        />
       </body>
     </html>
   );

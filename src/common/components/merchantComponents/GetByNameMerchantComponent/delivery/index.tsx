@@ -10,6 +10,7 @@ import SearchActions from './components/searchActions';
 import MerchantResultsList from './components/merchantResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
+import { toast } from 'sonner';
 
 const GetByNameMerchantComponent: React.FC = () => {
     const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -35,6 +36,7 @@ const GetByNameMerchantComponent: React.FC = () => {
         if(merchantName.trim()) {
             getMerchantByName(merchantName.trim());
         }else{
+            toast.error('❌ Por favor, introduce un nombre de comerciante válido');
             addLog('Por favor, introduce un nombre de comerciante válido');
         }
     };
@@ -61,14 +63,17 @@ const GetByNameMerchantComponent: React.FC = () => {
                 setSearchResults(result.data);
                 setSelectedMerchant(result.data[0] || null);
                 setLastResult(result.data[0] || null);
+                toast.success(`✅ Comerciante encontrado: ${result.data[0]?.name || 'N/A'}`);
                 addLog(`✅ Comerciante encontrado: ${result.data[0]?.name || 'N/A'}`);
             }else{
+                toast.error(result.error || '❌ No se encontraron comerciantes');
                 addLog(`❌ Error al buscar comerciante: ${result.error || 'No se encontraron comerciantes'}`);
                 setSearchResults([]);
                 setSelectedMerchant(null);
                 setLastResult(null);
             }
         }catch (error) {
+            toast.error(`❌ Error al buscar comerciante: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             addLog(`❌ Error al buscar comerciante: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             setSearchResults([]);
             setSelectedMerchant(null);

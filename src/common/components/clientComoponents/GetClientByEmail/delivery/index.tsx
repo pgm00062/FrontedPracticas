@@ -10,6 +10,7 @@ import SearchActions from './components/searchActions';
 import ClientResult from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
+import { toast } from 'sonner';
 
 const GetClientByEmail: React.FC = () => {
 
@@ -38,8 +39,10 @@ const GetClientByEmail: React.FC = () => {
             const result = await searchClientByEmail(email, addLog);
             
             if (result.success && result.data) {
+                toast.success('✅ Cliente encontrado exitosamente');
                 setLastResult(result.data);
             } else {
+                toast.error('❌ Cliente no encontrado');
                 setLastResult(null);
             }
         } catch (error) {
@@ -55,6 +58,7 @@ const GetClientByEmail: React.FC = () => {
         if (clientEmail.trim()) {
             getClientByEmail(clientEmail.trim());
         } else {
+            toast.error('❌ Por favor, introduce un email de cliente válido');
             addLog('Por favor, introduce un email de cliente válido');
         }
     };

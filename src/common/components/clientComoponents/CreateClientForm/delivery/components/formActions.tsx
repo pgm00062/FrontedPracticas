@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Alert } from 'antd';
 
 interface FormActionsProps {
   onCreateClient: () => void;
@@ -9,29 +10,30 @@ interface FormActionsProps {
 const FormActions: React.FC<FormActionsProps> = ({
   onCreateClient,
   isCreating,
-  isFormValid
+  isFormValid,
 }) => {
   return (
     <>
       {/* Botón principal */}
-      <button
+      <Button
+        type="primary"
+        block
         onClick={onCreateClient}
-        disabled={isCreating || !isFormValid}
-        className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
-          isCreating || !isFormValid
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-600 text-white hover:bg-blue-700'
-        }`}
+        loading={isCreating}
+        disabled={!isFormValid}
+        size="large"
       >
-        {isCreating ? '⏳ Creando cliente...' : '🚀 Crear Cliente'}
-      </button>
+        {isCreating ? 'Creando cliente...' : '🚀 Crear Cliente'}
+      </Button>
 
       {/* Mensaje de validación */}
       {!isFormValid && (
-        <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-md">
-          <p className="text-yellow-800 text-sm">
-            ⚠️ Completa todos los campos requeridos
-          </p>
+        <div className="mt-4">
+          <Alert
+            message="⚠️ Completa todos los campos requeridos"
+            type="warning"
+            showIcon
+          />
         </div>
       )}
     </>

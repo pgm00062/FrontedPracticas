@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getClientById, deleteClientById } from './deleteClientOperations';
 import type { DeleteClientState } from '../delivery/interface';
+import { toast } from 'sonner';
 
 export const useDeleteClient = () => {
     const [state, setState] = useState<DeleteClientState>({
@@ -46,9 +47,11 @@ export const useDeleteClient = () => {
                     clientToDelete: null,
                     deleteResult: null
                 }));
+                toast.error(result.error || '❌ Error al buscar el cliente');
                 addLog(`❌ Error al buscar el cliente: ${result.error}`);
             }
         } catch (error) {
+            toast.error('❌ Error al buscar el cliente');
             addLog(`❌ Error al buscar el cliente: ${error}`);
             setState((prev: DeleteClientState) => ({
                 ...prev,
@@ -70,6 +73,7 @@ export const useDeleteClient = () => {
 
     const handleConfirmDelete = async () => {
         if (!state.clientToDelete) {
+            toast.error('❌ No hay cliente seleccionado para eliminar');
             addLog('❌ No hay cliente seleccionado para eliminar');
             return;
         }
@@ -80,6 +84,7 @@ export const useDeleteClient = () => {
         try {
             const result = await deleteClientById(state.clientToDelete.id, addLog);
             if (result.success) {
+                toast.success('✅ Cliente eliminado exitosamente');
                 addLog(`✅ Cliente eliminado exitosamente: ${state.clientToDelete.name} ${state.clientToDelete.surname}`);
                 setState((prev: DeleteClientState) => ({
                     ...prev,
@@ -90,6 +95,7 @@ export const useDeleteClient = () => {
                 setSearchId('');
                 setShowConfirmModal(false);
             } else {
+                toast.error(result.error || '❌ Error al eliminar el cliente');
                 addLog(`❌ Error al eliminar el cliente: ${result.error}`);
                 setState((prev: DeleteClientState) => ({
                     ...prev,
@@ -99,6 +105,7 @@ export const useDeleteClient = () => {
                 setShowConfirmModal(false);
             }
         } catch (error) {
+            toast.error('❌ Error al eliminar el cliente');
             addLog(`❌ Error al eliminar el cliente: ${error}`);
             setState((prev: DeleteClientState) => ({
                 ...prev,

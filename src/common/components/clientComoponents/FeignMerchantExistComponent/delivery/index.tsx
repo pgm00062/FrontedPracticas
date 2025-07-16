@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { LogEntry, FeignMerchantData,FeignMerchantExistState } from './interface';
 import {searchMerchantById} from '../infrastructure/feignMerchantExistOperations';
+import {toast} from 'sonner';
 
 import FeignMerchantResult from './components/merchantResult';
 import SearchMerchantActions from './components/searchMerchantActions';
@@ -37,8 +38,10 @@ const FeignMerchantExistComponent: React.FC = () => {
             const result = await searchMerchantById(merchantId, addLog);
             
             if (result.success && result.data) {
+                toast.success('✅ Comercio encontrado exitosamente');
                 setLastResult(result.data);
             } else {
+                toast.error('❌ Comercio no encontrado o error en la búsqueda');
                 setLastResult(null);
             }
         } catch (error) {
@@ -54,6 +57,7 @@ const FeignMerchantExistComponent: React.FC = () => {
         if (merchantId.trim()) {
             getByIdMerchant(merchantId.trim());
         } else {
+            toast.error('❌ ID de comercio no puede estar vacío');
             addLog('Por favor, introduce un ID de comercio válido');
         }
     };

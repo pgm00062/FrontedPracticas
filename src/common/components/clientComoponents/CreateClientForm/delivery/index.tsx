@@ -5,6 +5,7 @@ import type {ClientFormData, CreateClientResult } from './interface';
 import {DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData } from '../infrastructure/clientDataOperations';
 import { createLogEntry} from '../infrastructure/logOperations';
 import { createClientWithJWT } from '../infrastructure/clientCreationOperations';
+import {toast} from 'sonner';
 
 import ClientFormFields from './components/clientFormFields';
 import FormActions from './components/formActions';
@@ -53,9 +54,17 @@ const CreateClientForm: React.FC = () => {
     try {
       const result = await createClientWithJWT(clientData, addLog);
       setLastResult(result);
+
+      if (result.success) {
+        toast.success('✅ Cliente creado exitosamente');
+      } else {
+        toast.error(result.error || '❌ Error desconocido al crear cliente');
+      }
     } catch (error: any) {
-      addLog(`❌ Error inesperado: ${error.message}`);
-      setLastResult({ success: false, error: error.message });
+      const message = error.message || '❌ Error desconocido';
+      addLog(`❌ Error inesperado: ${message}`);
+      setLastResult({ success: false, error: message });
+      toast.error(`❌ ${message}`);
     } finally {
       setIsCreating(false);
       addLog('🏁 Proceso completado');

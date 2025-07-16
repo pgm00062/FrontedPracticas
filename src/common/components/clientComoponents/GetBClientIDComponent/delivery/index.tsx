@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import type { LogEntry, ClientData} from './interface';
 import {createLogEntry} from '../infrastructure/logOperations';
 import { searchClientById } from '../infrastructure/clientSearchOperations';
+import {toast} from 'sonner';
 
 import SearchForm from './components/searchForm';
 import SearchActions from './components/searchActions';
@@ -39,11 +40,14 @@ const GetByIdClientIDComponent: React.FC = () => {
             const result = await searchClientById(clientId, addLog);
             
             if (result.success && result.data) {
+                toast.success('✅ Cliente encontrado exitosamente');
                 setLastResult(result.data);
             } else {
+                toast.error('❌ Cliente no encontrado');
                 setLastResult(null);
             }
         } catch (error) {
+            toast.error('❌ Error al buscar cliente');
             addLog(`❌ Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             setLastResult(null);
         } finally {
@@ -56,6 +60,7 @@ const GetByIdClientIDComponent: React.FC = () => {
         if (clientId.trim()) {
             getByIdClientID(clientId.trim());
         } else {
+            toast.error('❌ Por favor, introduce un ID de cliente válido');
             addLog('Por favor, introduce un ID de cliente válido');
         }
     };

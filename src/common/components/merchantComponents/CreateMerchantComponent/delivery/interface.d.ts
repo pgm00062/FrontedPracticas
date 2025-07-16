@@ -14,6 +14,17 @@ export interface MerchantFormData {
     merchantType: MerchantType; 
 }
 
+export interface ClientFormData {
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  cifNifNie: string;
+  age: number;
+  merchantType: null;
+}
+
+
 export interface ComponentState {
     logs: string[];
     isCreating: boolean;

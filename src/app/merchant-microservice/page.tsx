@@ -8,6 +8,7 @@ import TestBackendConnection from '@/common/components/SharedComponents/TestBack
 import  GetByIdMerchantComponent  from '@/common/components/merchantComponents/GetByIdMerchantComponent/delivery';
 import GetByNameMerchantComponent from '@/common/components/merchantComponents/GetByNameMerchantComponent/delivery';
 import UpdateMerchantComponent from '@/common/components/merchantComponents/UpdateMerchantComponent/delivery';
+import GetMerchantsByClientIdComponent from '@/common/components/merchantComponents/GetMerchantsByClientIdComponent/delivery';
 
 export default function MerchantPage() {
   const [merchants, setMerchants] = useState([]);
@@ -45,6 +46,10 @@ export default function MerchantPage() {
           {/* Update merchant by id */}
           <div className="gap-8 mb-8">
               <UpdateMerchantComponent />
+          </div>
+
+          <div className="gap-8 mb-8">
+              <GetMerchantsByClientIdComponent />
           </div>
 
           <div className="gap-8 mb-8">

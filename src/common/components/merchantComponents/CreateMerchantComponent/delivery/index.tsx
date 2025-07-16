@@ -9,6 +9,7 @@ import MerchantFormFields from './components/merchantFormFields';
 import FormActions from './components/formActions';
 import ResultDisplay from './components/resultDisplay';
 import LogDisplay from './components/logDisplay';
+import { toast } from 'sonner';
 
 const CreateMerchantComponent: React.FC = () => {
 
@@ -51,14 +52,20 @@ const CreateMerchantComponent: React.FC = () => {
         clearResults();
 
         try {
-        const result = await createMerchantWithJWT(merchantData, addLog);
-        setLastResult(result);
+            const result = await createMerchantWithJWT(merchantData, addLog);
+            setLastResult(result);
+            if (result.success) {
+                toast.success('✅ Comerciante creado exitosamente');
+            } else {
+                toast.error(`❌ Error al crear el comerciante: ${result.error}`);
+            }
         } catch (error: any) {
-        addLog(`❌ Error inesperado: ${error.message}`);
-        setLastResult({ success: false, error: error.message });
+            toast.error(`❌ Error al crear el comerciante: ${error.message}`);
+            addLog(`❌ Error inesperado: ${error.message}`);
+            setLastResult({ success: false, error: error.message });
         } finally {
-        setIsCreating(false);
-        addLog('🏁 Proceso completado');
+            setIsCreating(false);
+            addLog('🏁 Proceso completado');
         }
     };
 

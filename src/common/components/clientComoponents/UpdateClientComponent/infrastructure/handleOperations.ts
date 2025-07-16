@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {getClientById, updateClientById} from '../infrastructure/updateClientOperations';
 import type { ClientUpadateData, UpdateClientState } from '../delivery/interface';
+import { toast } from 'sonner';
 
 export const handleOperations = () => {
     const [state, setState] = useState<UpdateClientState>({
@@ -30,6 +31,7 @@ export const handleOperations = () => {
     }));
     
     if (!state.searchId.trim()) {
+      toast.error('❌ Introduce un ID válido');
       addLog('❌ Introduce un ID válido');
       return;  
     }
@@ -81,6 +83,7 @@ export const handleOperations = () => {
       }));
 
     if (!state.updatedClient) {
+      toast.error('❌ No hay datos para actualizar');
       addLog('❌ No hay datos para actualizar');
       return;
     }
@@ -106,10 +109,12 @@ export const handleOperations = () => {
           ...prev,
           currentClient: result.data
         }));
+        toast.success('✅ Cliente actualizado exitosamente');
         addLog('✅ Cliente actualizado exitosamente en la interfaz');
       }
 
     } catch (error) {
+      toast.error(`❌ Error al actualizar cliente: ${error}`);
       addLog(`❌ Error: ${error}`);
       setState(prev => ({ ...prev, isUpdating: false }));
     }

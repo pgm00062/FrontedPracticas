@@ -8,6 +8,7 @@ import SearchActions from './components/searchActions';
 import MerchantResult from './components/merchantResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
+import { toast } from 'sonner';
 
 const GetByIdMerchantComponent: React.FC = () => {
 
@@ -35,11 +36,14 @@ const GetByIdMerchantComponent: React.FC = () => {
             const result = await searchMerchantById(clientId, merchantId, addLog);
 
             if (result.success && result.data) {
+                toast.success('✅ Comerciante encontrado exitosamente');
                 setLastResult(result.data);
             } else {
+                toast.error('❌ No se encontró el comerciante');
                 setLastResult(null);
             }
         }catch (error) {
+            toast.error('❌ Error al buscar el comerciante');
             addLog(`❌ Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
             setLastResult(null);
         } finally {

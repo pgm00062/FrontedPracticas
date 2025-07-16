@@ -81,7 +81,7 @@ export const searchMerchantById = async (
         return {
             success: false,
             error: `Error en la petición: ${errorMessage}`,
-            statusCode: 0
+            statusCode: 500
         };
     }
 };

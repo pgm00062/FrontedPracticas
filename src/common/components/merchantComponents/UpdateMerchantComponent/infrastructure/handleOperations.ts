@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import { getMerchantById, updateMerchant } from './updateMerchantOperations';
 import type { UpdateMerchantData, UpdateMerchantState } from '../delivery/interface';
+import { toast } from 'sonner';
 
 export const handleOperations = () => {
     const [state, setState] = useState<UpdateMerchantState>({
@@ -29,9 +30,11 @@ export const handleOperations = () => {
         }));
         
         if (!state.searchClientId.trim()) {
+            toast.error('❌ Introduce un ID de cliente válido');
             addLog('❌ Introduce un ID de cliente válido');
             return;  
         }else if (!state.searchMerchantId.trim()) {
+            toast.error('❌ Introduce un ID de comerciante válido');
             addLog('❌ Introduce un ID de comerciante válido');
             return;
         }
@@ -74,6 +77,7 @@ export const handleOperations = () => {
         setState(prev => ({ ...prev, isUpdating: true }));
 
         if (!state.updatedMerchant) {
+            toast.error('❌ No hay datos para actualizar');
             addLog('❌ No hay datos para actualizar');
             setState(prev => ({
                 ...prev,
@@ -107,6 +111,7 @@ export const handleOperations = () => {
                         message: 'Merchant actualizado exitosamente'
                     }
                 }));
+                toast.success('✅ Merchant actualizado exitosamente');
                 addLog('✅ Merchant actualizado exitosamente');
             } else {
                 setState(prev => ({
@@ -117,6 +122,7 @@ export const handleOperations = () => {
                         error: result.error || 'Error desconocido al actualizar el merchant'
                     }
                 }));
+                toast.error(result.error || '❌ Error desconocido al actualizar merchant');
                 addLog(`❌ Error al actualizar merchant: ${result.error}`);
             }
         } catch (error: any) {
@@ -128,6 +134,7 @@ export const handleOperations = () => {
                     error: error.message || 'Excepción desconocida al actualizar'
                 }
             }));
+            toast.error(error.message || '❌ Excepción desconocida al actualizar merchant');
             addLog(`❌ Error al actualizar merchant: ${error}`);
         }
     };
