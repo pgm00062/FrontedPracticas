@@ -78,5 +78,4 @@ const DeleteClientForm: React.FC = () => {
         </div>
     );
 }
-
 export default DeleteClientForm;

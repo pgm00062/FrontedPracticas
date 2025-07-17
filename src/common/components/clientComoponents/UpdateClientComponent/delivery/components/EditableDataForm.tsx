@@ -1,5 +1,8 @@
 import React from 'react';
+import { Button, Form, Input, InputNumber, Typography, Card } from 'antd';
 import type { ClientUpadateData } from '../interface';
+
+const { Title } = Typography;
 
 interface EditableDataFormProps {
   updatedClient: ClientUpadateData;
@@ -15,97 +18,87 @@ const EditableDataForm: React.FC<EditableDataFormProps> = ({
   onUpdate
 }) => {
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-blue-800 border-b pb-2">
-        ✏️ Nuevos Datos
-      </h3>
-      <div className="bg-blue-50 p-4 rounded-lg space-y-3">
-        <div>
-          <label className="text-sm font-medium text-blue-700">Nombre *</label>
-          <input
-            type="text"
+    <Card
+      title={<Title level={4}>✏️ Nuevos Datos</Title>}
+      bordered
+      size="small"
+      style={{ backgroundColor: '#f0f5ff', height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
+      <Form layout="vertical">
+        <Form.Item label="Nombre *">
+          <Input
             value={updatedClient.name}
             onChange={(e) => onInputChange('name', e.target.value)}
-            className="form-input w-full"
-            disabled={isUpdating}
             placeholder="Introduce el nombre"
+            disabled={isUpdating}
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-blue-700">Apellido *</label>
-          <input
-            type="text"
+        </Form.Item>
+
+        <Form.Item label="Apellido *">
+          <Input
             value={updatedClient.surname}
             onChange={(e) => onInputChange('surname', e.target.value)}
-            className="form-input w-full"
-            disabled={isUpdating}
             placeholder="Introduce el apellido"
+            disabled={isUpdating}
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-blue-700">Email *</label>
-          <input
+        </Form.Item>
+
+        <Form.Item label="Email *">
+          <Input
             type="email"
             value={updatedClient.email}
             onChange={(e) => onInputChange('email', e.target.value)}
-            className="form-input w-full"
-            disabled={isUpdating}
             placeholder="ejemplo@correo.com"
+            disabled={isUpdating}
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-blue-700">Teléfono</label>
-          <input
-            type="text"
+        </Form.Item>
+
+        <Form.Item label="Teléfono">
+          <Input
             value={updatedClient.phone}
             onChange={(e) => onInputChange('phone', e.target.value)}
-            className="form-input w-full"
-            disabled={isUpdating}
             placeholder="123456789"
+            disabled={isUpdating}
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-blue-700">CIF/NIF/NIE</label>
-          <input
-            type="text"
+        </Form.Item>
+
+        <Form.Item label="CIF/NIF/NIE">
+          <Input
             value={updatedClient.cifNifNie}
             onChange={(e) => onInputChange('cifNifNie', e.target.value)}
-            className="form-input w-full"
-            disabled={isUpdating}
             placeholder="12345678A"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-blue-700">Edad</label>
-          <input
-            type="number"
-            min="18"
-            max="120"
-            value={updatedClient.age}
-            onChange={(e) => onInputChange('age', parseInt(e.target.value) || 18)}
-            className="form-input w-full"
             disabled={isUpdating}
           />
-        </div>
+        </Form.Item>
 
-        {/* ✅ Botón actualizar */}
-        <button
-          onClick={onUpdate}
-          disabled={isUpdating || !updatedClient.name.trim() || !updatedClient.email.trim()}
-          className="btn btn-primary w-full mt-4"
-        >
-          {isUpdating ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin">🔄</span>
-              Actualizando...
-            </span>
-          ) : (
-            '💾 Actualizar Cliente'
-          )}
-        </button>
-      </div>
-    </div>
+        <Form.Item label="Edad">
+          <InputNumber
+            min={18}
+            max={120}
+            value={updatedClient.age}
+            onChange={(value) => onInputChange('age', value ?? 18)}
+            style={{ width: '100%' }}
+            disabled={isUpdating}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            block
+            onClick={onUpdate}
+            disabled={
+              isUpdating ||
+              !updatedClient.name.trim() ||
+              !updatedClient.email.trim()
+            }
+            loading={isUpdating}
+          >
+            💾 {isUpdating ? 'Actualizando...' : 'Actualizar Cliente'}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
-
 export default EditableDataForm;

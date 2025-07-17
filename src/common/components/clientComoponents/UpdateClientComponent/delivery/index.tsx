@@ -16,37 +16,37 @@ const UpdateClientComponent: React.FC = () => {
     handleReset
   }= handleOperations();
 
-  // ✅ LOG PARA DEBUG - ver el estado actual
-  console.log('🔍 Estado actual:', state);
-
   return (
-    <div className="space-y-6">
-      {/* ✅ COMPONENTE 1: Búsqueda */}
-      <SearchAndUpdateForm
-        searchId={state.searchId}
-        isSearching={state.isSearching}
-        currentClient={state.currentClient}
-        onSearchIdChange={handleSearchIdChange}
-        onSearch={handleSearch}
-        onKeyPress={handleKeyPress}
-      />
+     <div className="card">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">🔄 Actualizar Cliente</h2>
+          <div className="space-y-6">
+                  {/* ✅ COMPONENTE 1: Búsqueda */}
+                  <SearchAndUpdateForm
+                    searchId={state.searchId}
+                    isSearching={state.isSearching}
+                    currentClient={state.currentClient}
+                    onSearchIdChange={handleSearchIdChange}
+                    onSearch={handleSearch}
+                    onKeyPress={handleKeyPress}
+                  />
 
-      {/* ✅ COMPONENTE 2: Edición (split view) */}
-      {state.currentClient && state.updatedClient && (
-        <ClientEditView
-          currentClient={state.currentClient}
-          updatedClient={state.updatedClient}
-          isUpdating={state.isUpdating}
-          showInstructions={state.showInstructions} 
-          onInputChange={handleInputChange}
-          onUpdate={handleUpdate}
-          onReset={handleReset}
-        />
-      )}
+                  {/* ✅ COMPONENTE 2: Edición (split view) */}
+                  {state.currentClient && state.updatedClient && (
+                    <ClientEditView
+                      currentClient={state.currentClient}
+                      updatedClient={state.updatedClient}
+                      isUpdating={state.isUpdating}
+                      showInstructions={state.showInstructions} 
+                      onInputChange={handleInputChange}
+                      onUpdate={handleUpdate}
+                      onReset={handleReset}
+                    />
+                  )}
 
-      {/* ... resto de componentes (resultado, logs) ... */}
-      <ResultDisplay result={state.result} />
+            {/* ... resto de componentes (resultado, logs) ... */}
+            <ResultDisplay result={state.result} />
 
+          </div>
     </div>
   );
 };

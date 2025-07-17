@@ -56,7 +56,7 @@ export const handleOperations = () => {
           updatedClient: { ...result.data }, // ✅ Copia para editar
           isSearching: false
         }));
-        
+        toast.success('✅ Cliente encontrado');
         addLog(`✅ Estado actualizado - Cliente cargado para edición`);
       } else {
         setState(prev => ({

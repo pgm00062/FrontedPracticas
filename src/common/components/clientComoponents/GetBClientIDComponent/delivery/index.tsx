@@ -1,116 +1,138 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { LogEntry, ClientData} from './interface';
-import {createLogEntry} from '../infrastructure/logOperations';
-import { searchClientById } from '../infrastructure/clientSearchOperations';
-import {toast} from 'sonner';
+import { Input, Button, Card, Typography } from 'antd';
+import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
-import SearchForm from './components/searchForm';
+import type { LogEntry, ClientData } from './interface';
+import { createLogEntry } from '../infrastructure/logOperations';
+import { searchClientById } from '../infrastructure/clientSearchOperations';
+
 import SearchActions from './components/searchActions';
 import ClientResult from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 
+const { Title } = Typography;
+
 const GetByIdClientIDComponent: React.FC = () => {
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+  const [lastResult, setLastResult] = useState<ClientData | null>(null);
+  const [clientId, setClientId] = useState('');
 
-    const [logs, setLogs] = useState<LogEntry[]>([]);
-    const [isCreating, setIsCreating] = useState(false);
-    const [lastResult, setLastResult] = useState<ClientData | null>(null);
-    const [clientId, setClientId] = useState('');
+  const addLog = (message: string) => {
+    const logEntry = createLogEntry(message);
+    setLogs((prev) => [...prev, logEntry]);
+  };
 
-    //Añade mensajes al log usando la función de infrastructure
-    const addLog = (message: string) => {
-        const logEntry = createLogEntry(message);
-        setLogs(prev => [...prev, logEntry]);
-    };
+  const clearResults = () => {
+    setLogs([]);
+    setLastResult(null);
+  };
 
-    //Limpia el log y resultados anteriores
-    const clearResults = () => {
-        setLogs([]);
+  const getByIdClientID = async (clientId: string) => {
+    clearResults();
+    setIsCreating(true);
+
+    try {
+      const result = await searchClientById(clientId, addLog);
+
+      if (result.success && result.data) {
+        toast.success('✅ Cliente encontrado exitosamente');
+        setLastResult(result.data);
+      } else {
+        toast.error('❌ Cliente no encontrado');
         setLastResult(null);
-    };
+      }
+    } catch (error) {
+      toast.error('❌ Error al buscar cliente');
+      addLog(
+        `❌ Error inesperado: ${
+          error instanceof Error ? error.message : 'Error desconocido'
+        }`
+      );
+      setLastResult(null);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
-    // ✅ Función principal simplificada usando infrastructure
-    const getByIdClientID = async (clientId: string) => {
-        clearResults();
-        setIsCreating(true);
+  const handleSearch = () => {
+    if (clientId.trim()) {
+      getByIdClientID(clientId.trim());
+    } else {
+      toast.error('❌ Por favor, introduce un ID de cliente válido');
+      addLog('Por favor, introduce un ID de cliente válido');
+    }
+  };
 
-        try {
-            const result = await searchClientById(clientId, addLog);
-            
-            if (result.success && result.data) {
-                toast.success('✅ Cliente encontrado exitosamente');
-                setLastResult(result.data);
-            } else {
-                toast.error('❌ Cliente no encontrado');
-                setLastResult(null);
-            }
-        } catch (error) {
-            toast.error('❌ Error al buscar cliente');
-            addLog(`❌ Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
-            setLastResult(null);
-        } finally {
-            setIsCreating(false);
-        }
-    };
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSearch();
+  };
 
-    // ⭐ Función para manejar la búsqueda
-    const handleSearch = () => {
-        if (clientId.trim()) {
-            getByIdClientID(clientId.trim());
-        } else {
-            toast.error('❌ Por favor, introduce un ID de cliente válido');
-            addLog('Por favor, introduce un ID de cliente válido');
-        }
-    };
+  return (
+    <Card>
+      <Title level={4}>🆔 Buscar Cliente por ID (con JWT automático)</Title>
 
-    // ⭐ Función para manejar Enter en el input
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
+      <div className="space-y-4">
+        {/* Campo de búsqueda */}
+        <Input.Search
+          placeholder="Introduce el ID del cliente"
+          value={clientId}
+          onChange={(e) => setClientId(e.target.value)}
+          onSearch={handleSearch}
+          onKeyDown={handleKeyPress}
+          loading={isCreating}
+          enterButton="Buscar"
+          size="large"
+        />
 
-    return (
-        <div className="card">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">🆔 Buscar Cliente por ID (con JWT automático)</h2>
-            
-            <div className="space-y-4">
-                {/* ✅ Subcomponente: Formulario de búsqueda */}
-                <SearchForm
-                    clientId={clientId}
-                    onClientIdChange={setClientId}
-                    onSearch={handleSearch}
-                    onKeyPress={handleKeyPress}
-                    isSearching={isCreating}
-                />
+        {/* Acciones extra */}
+        <SearchActions
+          logs={logs}
+          lastResult={lastResult}
+          onClearResults={clearResults}
+          isSearching={isCreating}
+        />
 
-                {/* ✅ Subcomponente: Botón limpiar resultados */}
-                <SearchActions
-                    logs={logs}
-                    lastResult={lastResult}
-                    onClearResults={clearResults}
-                    isSearching={isCreating}
-                />
+        {/* Resultado (con animación) */}
+        <AnimatePresence mode="wait">
+          {lastResult && (
+            <motion.div
+              key="found"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ClientResult client={lastResult} />
+            </motion.div>
+          )}
 
-                {/* ✅ Subcomponente: Mostrar cliente encontrado */}
-                <ClientResult client={lastResult} />
+          {!lastResult && logs.length > 0 && !isCreating && (
+            <motion.div
+              key="notfound"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.3 }}
+            >
+              <NotFoundMessage
+                logs={logs}
+                lastResult={lastResult}
+                isSearching={isCreating}
+                clientId={clientId}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                {/* ✅ Subcomponente: Mensaje cliente no encontrado */}
-                <NotFoundMessage
-                    logs={logs}
-                    lastResult={lastResult}
-                    isSearching={isCreating}
-                    clientId={clientId}
-                />
-
-                {/* ✅ Subcomponente: Mostrar logs */}
-                <LogDisplay logs={logs} />
-            </div>
-        </div>
-    );
-
-}
-
+        {/* Logs */}
+        <LogDisplay logs={logs} />
+      </div>
+    </Card>
+  );
+};
 export default GetByIdClientIDComponent;

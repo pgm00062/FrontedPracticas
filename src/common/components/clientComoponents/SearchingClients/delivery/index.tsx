@@ -1,21 +1,24 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
+import { Select } from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import GetByIdClientIDComponent from '../../GetBClientIDComponent/delivery';
 import GetClientByEmail from '../../GetClientByEmail/delivery';
 import GetClientByName from '../../GetClientByName/delivery';
 
-const  SearchingClients: React.FC = () => {
+const { Option } = Select;
 
-const [selectedOption, setSelectedOption] = useState<string>('');
+const SearchingClients: React.FC = () => {
+  const [selectedOption, setSelectedOption] = useState<string>('');
 
   const renderSearchComponent = () => {
     switch (selectedOption) {
       case 'id':
         return <GetByIdClientIDComponent />;
       case 'email':
-        return <GetClientByEmail/>;
+        return <GetClientByEmail />;
       case 'name':
         return <GetClientByName />;
       default:
@@ -28,20 +31,36 @@ const [selectedOption, setSelectedOption] = useState<string>('');
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         🔎 Selecciona el tipo de búsqueda :
       </h2>
-      <select
-        id="search-option"
-        className="w-full p-2 border rounded mb-4"
-        value={selectedOption}
-        onChange={(e) => setSelectedOption(e.target.value)}
-      >
-        <option value="">-- Selecciona una opción --</option>
-        <option value="id">Buscar por ID</option>
-        <option value="email">Buscar por Email</option>
-        <option value="name">Buscar por Nombre</option>
-      </select>
 
-      <div className="mt-4">{renderSearchComponent()}</div>
+      <Select
+        placeholder="-- Selecciona una opción --"
+        style={{ width: '100%' }}
+        value={selectedOption || undefined}
+        onChange={(value) => setSelectedOption(value)}
+        size="large"
+        className="mb-4"
+      >
+        <Option value="">-- Selecciona una opción --</Option>
+        <Option value="id">🆔 Buscar por ID</Option>
+        <Option value="email">📧 Buscar por Email</Option>
+        <Option value="name">👤 Buscar por Nombre</Option>
+      </Select>
+
+      <AnimatePresence mode="wait">
+        {selectedOption && (
+          <motion.div
+            key={selectedOption}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="mt-4"
+          >
+            {renderSearchComponent()}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
-}
+};
 export default SearchingClients;
