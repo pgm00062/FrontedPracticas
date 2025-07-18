@@ -13,6 +13,8 @@ import SearchActions from './components/searchActions';
 import ClientResult from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
+import ButtonDeleteClient from "@/common/components/clientComoponents/SearchDeleteClientButton/delivery";
+import { ClientDeleteData } from '../../DeleteClientForm/delivery/interface';
 
 const { Title } = Typography;
 
@@ -75,7 +77,6 @@ const GetByIdClientIDComponent: React.FC = () => {
   return (
     <Card>
       <Title level={4}>🆔 Buscar Cliente por ID (con JWT automático)</Title>
-
       <div className="space-y-4">
         {/* Campo de búsqueda */}
         <Input.Search
@@ -108,6 +109,13 @@ const GetByIdClientIDComponent: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <ClientResult client={lastResult} />
+
+              {/* Botones de acciones */}
+              <div style={{ display: "flex", gap: 16, marginTop: 24 }}>
+                    {lastResult && lastResult.id && (
+                    <ButtonDeleteClient client={lastResult as ClientDeleteData} />
+                  )}
+              </div>
             </motion.div>
           )}
 
