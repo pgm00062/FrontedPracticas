@@ -1,0 +1,39 @@
+'use client';
+import { useState } from "react";
+import { Tabs } from "antd";
+import Title from "antd/es/typography/Title";
+import { UserSwitchOutlined } from "@ant-design/icons";
+
+interface TabItem {
+  key: string;
+  label: string;
+  children: React.ReactNode;
+}
+
+interface ClientTabsProps {
+  tabItems: TabItem[];
+}
+
+export default function ClientTabs({ tabItems }: ClientTabsProps) {
+  const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
+
+  return (
+    <>
+      <Tabs
+        items={tabItems}
+        type="card"
+        tabBarStyle={{ marginBottom: 32, fontWeight: 500, fontSize: 16 }}
+        activeKey={activeKey}
+        onChange={setActiveKey}
+      />
+      {activeKey === undefined && (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 64 }}>
+          <UserSwitchOutlined style={{ fontSize: 96, color: "#1677ff", marginBottom: 24 }} />
+          <Title level={2} style={{ textAlign: "center" }}>
+            Selecciona una funcionalidad para empezar
+          </Title>
+        </div>
+      )}
+    </>
+  );
+}

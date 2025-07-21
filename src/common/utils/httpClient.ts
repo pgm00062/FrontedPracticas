@@ -39,7 +39,14 @@ const createApiClient = (baseURL: string): AxiosInstance => {
   // Interceptor para agregar token JWT
   client.interceptors.request.use(
     (config) => {
-      const token = Cookies.get('authToken') || localStorage.getItem('authToken');
+      let token: string | undefined;
+      if (typeof window !== 'undefined') {
+        // Solo en el cliente
+        token = Cookies.get('authToken') ?? localStorage.getItem('authToken') ?? undefined;
+      } else {
+        // Solo en el servidor
+        token = Cookies.get('authToken') ?? undefined;
+      }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

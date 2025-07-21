@@ -39,12 +39,11 @@ export const useDeleteClient = () => {
         addLog('🚫 Eliminación cancelada por el usuario');
     };
 
-    const handleConfirmDelete = async () => {
-
+    const handleConfirmDelete = async (): Promise<boolean> => {
         if (!state.clientToDelete || !state.clientToDelete.id) {
             toast.error('❌ No hay cliente seleccionado para eliminar');
             addLog('❌ No hay cliente seleccionado para eliminar');
-            return;
+            return false;
         }
 
         setState((prev) => ({ ...prev, isDeleting: true }));
@@ -63,6 +62,7 @@ export const useDeleteClient = () => {
                 }));
                 setSearchId('');
                 setShowConfirmModal(false);
+                return true; // <-- Devuelve true si se elimina correctamente
             } else {
                 toast.error(result.error || '❌ Error al eliminar el cliente');
                 addLog(`❌ Error al eliminar el cliente: ${result.error}`);
@@ -72,6 +72,7 @@ export const useDeleteClient = () => {
                     isDeleting: false
                 }));
                 setShowConfirmModal(false);
+                return false;
             }
         } catch (error) {
             toast.error('❌ Error al eliminar el cliente');
@@ -82,6 +83,7 @@ export const useDeleteClient = () => {
                 isDeleting: false
             }));
             setShowConfirmModal(false);
+            return false;
         }
     };
 

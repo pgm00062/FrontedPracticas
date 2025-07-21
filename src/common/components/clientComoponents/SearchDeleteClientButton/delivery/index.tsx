@@ -5,9 +5,10 @@ import { ClientDeleteData } from './interface';
 
 interface ButtonDeleteClientProps {
   client: ClientDeleteData;
+  onDeleted?: () => void; // Callback when deletion is confirmed
 }
 
-const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client }) => {
+const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client, onDeleted }) => {
   const {
     state,
     showConfirmModal,
@@ -16,6 +17,11 @@ const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client }) => {
     handleConfirmDelete,
     handleReset
   } = useDeleteClient();
+
+    const handleConfirmDeleteAndNotify = async () => {
+      const deleted = await handleConfirmDelete();
+      if (deleted && onDeleted) onDeleted();
+    };
 
   return (
     <div className="space-y-6">
@@ -31,7 +37,7 @@ const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client }) => {
           isOpen={showConfirmModal}
           client={state.clientToDelete}
           isDeleting={state.isDeleting}
-          onConfirm={handleConfirmDelete}
+          onConfirm={handleConfirmDeleteAndNotify}
           onCancel={handleCancelDelete}
         />
       )}
