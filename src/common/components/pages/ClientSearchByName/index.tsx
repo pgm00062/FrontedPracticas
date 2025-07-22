@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Card, Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Typography, Input } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import SearchActions from './components/searchActions';
@@ -9,32 +9,50 @@ import ClientResultsList from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 
-import type { LogEntry,ClientData } from '../ClientSearchByName/interface';
+import type { LogEntry, ClientData } from '../ClientSearchByName/interface';
 
 const { Title } = Typography;
 
-interface Props {
-  clients: ClientData[];
-}
-
-const ClientResultsClient: React.FC<Props> = ({ clients }) => {
+const ClientResultsClient: React.FC = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+  const [query, setQuery] = useState('');
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    const addLog = (message: string) => {
-        setLogs((prev) => [
-            ...prev,
-            {
-            id: crypto.randomUUID(), 
-            message,
-            timestamp: new Date().toLocaleTimeString(),
-            }
-        ]);
-    };
+  // Búsqueda instantánea con debounce
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (query.trim().length > 1) {
+        setLoading(true);
+        fetch(`/api/search-client-by-name?name=${encodeURIComponent(query)}`)
+          .then(res => res.json())
+          .then(data => setClients(data.clients || []))
+          .finally(() => setLoading(false));
+      } else {
+        setClients([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  const addLog = (message: string) => {
+    setLogs((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        message,
+        timestamp: new Date().toLocaleTimeString(),
+      }
+    ]);
+  };
 
   const clearResults = () => {
     setLogs([]);
     setSelectedClient(null);
+    setClients([]);
+    setQuery('');
   };
 
   const handleSelectClient = (client: ClientData) => {
@@ -44,12 +62,18 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
 
   return (
     <Card>
-      <Title level={4}>👤 Resultados de búsqueda</Title>
+      <Title level={4}>👤 Buscar clientes por nombre</Title>
+      <Input
+        placeholder="Introduce el nombre del cliente..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        style={{ marginBottom: 16 }}
+      />
       <SearchActions
         logs={logs}
         lastResult={selectedClient}
         onClearResults={clearResults}
-        isSearching={false}
+        isSearching={loading}
       />
 
       <AnimatePresence mode="wait">
@@ -80,8 +104,8 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
             <NotFoundMessage
               logs={logs}
               lastResult={selectedClient}
-              isSearching={false}
-              clientName={""}
+              isSearching={loading}
+              clientName={query}
             />
           </motion.div>
         )}

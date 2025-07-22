@@ -19,9 +19,3 @@ export interface DeleteClientState {
     logs: string[];
     error?: string;
 }
-
-export interface DeleteClientProps {
-    onDeleteSuccess?: (client: ClientDeleteData) => void;
-    onDeleteError?: (error: string) => void;
-    initialClientId?: string; // Para pre-cargar un ID
-}

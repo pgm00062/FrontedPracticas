@@ -1,5 +1,5 @@
 import { clientServiceClient } from '@/common/utils/httpClient';
-import type { ClientData, JWTClientData } from '../delivery/interface';
+import type { ClientData, JWTClientData } from '../../../../utils/commonInterface';
 
 const DEFAULT_JWT_CLIENT_DATA: JWTClientData = {
     name: 'Debug Cliente',
@@ -13,25 +13,27 @@ const DEFAULT_JWT_CLIENT_DATA: JWTClientData = {
 
 // Función principal para buscar cliente por nombre parcial (sin logs, para Server Component)
 export const searchClientByNameServer = async (
-    name: string
+  name: string
 ): Promise<ClientData[]> => {
-    // Generar JWT
-    console.log("Buscando cliente por nombre:", name);
+  try {
     const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
     const jwt = jwtResponse.data.token;
 
-    // Buscar cliente
     const response = await clientServiceClient.get(`/clients/name?name=${name}`, {
-        headers: {
-            'Authorization': `Bearer ${jwt}`,
-            'Content-Type': 'application/json'
-        },
-        timeout: 5000,
-        validateStatus: () => true
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 5000,
+      validateStatus: () => true
     });
 
     if (response.status === 200) {
-        return response.data as ClientData[];
+      return response.data as ClientData[];
     }
     return [];
+  } catch (error) {
+    // Opcional: puedes loguear el error en el servidor si lo necesitas
+    return [];
+  }
 };

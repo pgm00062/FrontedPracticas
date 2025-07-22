@@ -8,19 +8,6 @@ export interface ClientUpdateData {
   merchantType?: null;
 }
 
-export interface ClientUpdateRequest{
-    id: string;//no se modifica, solo datos personales del cliente
-    clientData:{
-        name: string;
-        surname: string;
-        cifNifNie: string;
-        email: string;
-        phone: string;
-        age: number;
-    }
-}
-
-
 export interface UpdateClientState{
     //primero buscamos por id
     searchId: string;
@@ -35,12 +22,6 @@ export interface UpdateClientState{
     showInstructions: boolean; // Para mostrar u ocultar instrucciones
 }
 
-export interface ClientUpdateResult {
-    success: boolean;
-    client?: ClientData;
-    message?: string;
-    error?: string;
-}
 
 export interface ClientFormData {
     id?: string; // opcional para nuevos clientes

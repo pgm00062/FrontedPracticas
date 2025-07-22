@@ -1,4 +1,4 @@
-import type { ClientFormData } from '../../../../utils/commonInterface';
+import type { ClientFormData } from '../interface';
 
 // Datos por defecto para el formulario
 export const DEFAULT_CLIENT_DATA: ClientFormData = {
@@ -34,7 +34,8 @@ export const validateClientData = (data: ClientFormData): boolean => {
          data.age > 0;
 };
 
-
+// ✅ FUNCIÓN CORREGIDA: Incluir todos los campos GSI
+// ✅ FUNCIÓN CORREGIDA: Con el campo exacto de tu BD
 export const transformClientForCreation = (data: ClientFormData) => {
   return {
     // ✅ Campos básicos del cliente

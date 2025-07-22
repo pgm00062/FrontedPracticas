@@ -1,4 +1,3 @@
-
 import {useDeleteClient } from '../infrastructure/handleOperations'
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
 import { ClientDeleteData } from './interface';

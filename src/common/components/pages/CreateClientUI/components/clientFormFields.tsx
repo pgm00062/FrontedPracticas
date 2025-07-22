@@ -7,7 +7,7 @@ interface ClientFormFieldsProps {
   clientData: ClientFormData;
   onInputChange: (field: keyof ClientFormData, value: string | number) => void;
   onGenerateRandom: () => void;
-  isDisabled?: boolean;
+  isDisabled: boolean;
 }
 
 const ClientFormFields: React.FC<ClientFormFieldsProps> = ({

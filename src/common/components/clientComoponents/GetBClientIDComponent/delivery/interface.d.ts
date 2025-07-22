@@ -18,13 +18,6 @@ export interface ClientData {
   updatedAt?: string;
 }
 
-// Estado del componente
-export interface ComponentState {
-  logs: LogEntry[];
-  isCreating: boolean;
-  lastResult: ClientData | null;
-  clientId: string;
-}
 
 // Datos para generar JWT
 export interface JWTClientData {
@@ -35,11 +28,4 @@ export interface JWTClientData {
   email: string;
   phone: string;
   merchantType: null;
-}
-
-// Props del componente, añadir despues...
-export interface GetByIdClientIDComponentProps {
-  className?: string;
-  onClientFound?: (client: ClientData) => void;
-  onError?: (error: string) => void;
 }

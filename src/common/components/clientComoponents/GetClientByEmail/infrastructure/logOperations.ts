@@ -1,4 +1,4 @@
-import type { LogEntry } from '../delivery/interface';
+import type { LogEntry } from '../../../../utils/commonInterface';
 
 // Función para crear entrada de log
 export const createLogEntry = (message: string): LogEntry => {
