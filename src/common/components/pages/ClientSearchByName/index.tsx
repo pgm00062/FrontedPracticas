@@ -9,15 +9,19 @@ import ClientResultsList from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 
-import type { LogEntry, ClientData } from '../ClientSearchByName/interface';
+import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 
 const { Title } = Typography;
 
-const ClientResultsClient: React.FC = () => {
+interface Props{
+  clients: ClientData[];
+}
+
+const ClientResultsClient: React.FC<Props> = ({ clients }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [query, setQuery] = useState('');
-  const [clients, setClients] = useState<ClientData[]>([]);
+  const [clientsState, setClientsState] = useState<ClientData[]>(clients); // estado inicial desde props
   const [loading, setLoading] = useState(false);
 
   // Búsqueda instantánea con debounce
@@ -27,10 +31,10 @@ const ClientResultsClient: React.FC = () => {
         setLoading(true);
         fetch(`/api/search-client-by-name?name=${encodeURIComponent(query)}`)
           .then(res => res.json())
-          .then(data => setClients(data.clients || []))
+          .then(data => setClientsState(data.clients || []))
           .finally(() => setLoading(false));
       } else {
-        setClients([]);
+        setClientsState([]);
       }
     }, 300);
 
@@ -51,7 +55,7 @@ const ClientResultsClient: React.FC = () => {
   const clearResults = () => {
     setLogs([]);
     setSelectedClient(null);
-    setClients([]);
+    setClientsState([]);
     setQuery('');
   };
 
@@ -77,7 +81,7 @@ const ClientResultsClient: React.FC = () => {
       />
 
       <AnimatePresence mode="wait">
-        {clients.length > 0 && (
+        {clientsState.length > 0 && (
           <motion.div
             key="results"
             initial={{ opacity: 0, y: 8 }}
@@ -86,14 +90,14 @@ const ClientResultsClient: React.FC = () => {
             transition={{ duration: 0.3 }}
           >
             <ClientResultsList
-              clients={clients}
+              clients={clientsState}
               selectedClient={selectedClient}
               onSelectClient={handleSelectClient}
             />
           </motion.div>
         )}
 
-        {!clients.length && logs.length > 0 && (
+        {!clientsState.length && logs.length > 0 && (
           <motion.div
             key="notfound"
             initial={{ opacity: 0, y: 8 }}

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ClientData } from '../interface';
+import type { ClientData } from '../../../../utils/commonInterface';
 
 interface ClientResultProps {
   client: ClientData | null;

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import type { ClientFormData, CreateClientResult } from './interface';
+import type { ClientFormData, CreateClientResult } from '../../../utils/commonInterface';
 import { DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData } from './infrastructure/clientDataOperations';
 import { toast } from 'sonner';
 

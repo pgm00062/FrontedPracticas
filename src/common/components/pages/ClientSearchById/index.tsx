@@ -1,10 +1,10 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Card, Typography } from 'antd';
+import { Card, Typography, Button,Input } from 'antd';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import type { LogEntry, ClientData } from './interface';
+import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 import SearchActions from './components/searchActions';
 import ClientResult from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';

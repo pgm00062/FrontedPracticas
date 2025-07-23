@@ -1,5 +1,5 @@
-import {MerchantType} from '../../../../utils/enums/merchant.enum';
-import type { MerchantFormData } from '../../../../utils/commonInterface';
+import {MerchantType} from '../../../../../utils/enums/merchant.enum';
+import type { MerchantFormData } from '../../../../../utils/commonInterface';
 // Datos por defecto para el formulario
 export const DEFAULT_MERCHANT_DATA: MerchantFormData = {
   clientId: '123545', // ID de cliente por defecto  

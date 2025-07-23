@@ -8,7 +8,7 @@ import ClientResult from './components/clientResult';
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 
-import type { LogEntry, ClientData } from './interface';
+import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 
 interface Props {
   result: ClientData | null;

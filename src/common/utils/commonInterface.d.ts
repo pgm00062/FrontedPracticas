@@ -1,3 +1,8 @@
+import { MerchantType } from "./enums/merchant.enum";
+
+//=============================
+//===========CLIENT============
+//=============================
 //BUSQUEDAS: ID, EMAIL, NOMBRE
 export interface LogEntry {
   id: string;
@@ -24,7 +29,6 @@ export interface JWTClientData {
   phone: string;
   merchantType: null;
 }
-
 //CREACION CLIENTES
 export interface ClientFormData {
   name: string;
@@ -40,4 +44,32 @@ export interface CreateClientResult {
   client?: any;
   jwt?: string;
   error?: string;
+}
+
+//=============================
+//==========MERCHANT===========
+//=============================
+export interface MerchantFormData {
+    clientId: string; 
+    name: string;
+    address: string;
+    merchantType: MerchantType; 
+}
+export interface CreateMerchantResult {
+    success: boolean;
+    merchant?: any;
+    jwt?: string;
+    error?: string;
+}
+export interface MerchantData {
+    merchantId: string;
+    clientId: string; 
+    name: string;
+    address: string;
+    merchantType: MerchantType; 
+}
+export interface JWTMerchantData {
+    name: string;
+    address: string;
+    merchantType: MerchantType;
 }

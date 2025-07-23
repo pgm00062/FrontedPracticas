@@ -1,12 +1,10 @@
 import React from 'react';
-import type { LogEntry } from '../../../../utils/commonInterface';
+import type { LogEntry } from '../../../../../utils/commonInterface';
 
 interface LogDisplayProps {
   logs: LogEntry[];
 }
-
-// Función para obtener la clase CSS del log
-const getLogClassName = (log: LogEntry): string => {
+export const getLogClassName = (log: LogEntry): string => {
     let logClassName = 'text-xs font-mono p-2 rounded ';
     
     if (log.message.includes('✅') || log.message.includes('exitosamente')) {

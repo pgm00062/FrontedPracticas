@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LogEntry } from '../interface';
+import type { LogEntry } from '../../../../utils/commonInterface';
 
 
 interface LogDisplayProps {

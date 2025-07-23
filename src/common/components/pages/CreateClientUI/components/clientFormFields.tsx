@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Input, Form, InputNumber, Row, Col } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
-import type { ClientFormData } from '../interface';
+import type { ClientFormData } from '../../../../utils/commonInterface';
 
 interface ClientFormFieldsProps {
   clientData: ClientFormData;

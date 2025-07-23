@@ -1,5 +1,5 @@
 import React from 'react';
-import type{ MerchantFormData } from '../interface';
+import type{ MerchantFormData } from '../../../../../utils/commonInterface';
 
 interface MerchantFormFieldsProps {
   merchantData: MerchantFormData;

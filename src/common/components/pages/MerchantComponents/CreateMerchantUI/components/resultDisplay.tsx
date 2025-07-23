@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CreateMerchantResult } from '../interface';
+import type { CreateMerchantResult } from '../../../../../utils/commonInterface';
 
 interface ResultDisplayProps {
   result: CreateMerchantResult | null;

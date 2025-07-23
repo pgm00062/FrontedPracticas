@@ -1,5 +1,5 @@
 import React from 'react';
-import type { MerchantData } from '../interface';
+import type { MerchantData } from '../../../../../utils/commonInterface';
 
 interface MerchantResultProps {
   merchant: MerchantData | null;

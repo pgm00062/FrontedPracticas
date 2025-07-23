@@ -1,4 +1,4 @@
-import type { ClientFormData } from '../interface';
+import type { ClientFormData } from '../../../../utils/commonInterface';
 
 // Datos por defecto para el formulario
 export const DEFAULT_CLIENT_DATA: ClientFormData = {

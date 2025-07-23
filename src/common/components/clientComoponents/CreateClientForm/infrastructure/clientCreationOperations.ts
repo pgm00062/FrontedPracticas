@@ -28,7 +28,7 @@ export const createClientWithJWTServer = async (
       },
       timeout: 10000,
       validateStatus: () => true
-    });ss
+    });
 
     if (createResponse.status === 201) {
       return {

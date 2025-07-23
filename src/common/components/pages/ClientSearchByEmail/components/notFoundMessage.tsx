@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LogEntry, ClientData } from '../interface';
+import type { LogEntry, ClientData } from '../../../../utils/commonInterface';
 
 interface NotFoundMessageProps {
   logs: LogEntry[];

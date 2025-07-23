@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LogEntry, MerchantData } from '../interface';
+import type { LogEntry, MerchantData } from '../../../../../utils/commonInterface';
 
 interface NotFoundMessageProps {
   logs: LogEntry[];
