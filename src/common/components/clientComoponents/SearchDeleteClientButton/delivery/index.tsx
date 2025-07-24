@@ -1,6 +1,7 @@
 import {useDeleteClient } from '../infrastructure/handleOperations'
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
 import { ClientDeleteData } from './interface';
+import {Button} from 'antd';
 
 interface ButtonDeleteClientProps {
   client: ClientDeleteData;
@@ -24,13 +25,13 @@ const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client, onDelet
 
   return (
     <div className="space-y-6">
-      <button
+      <Button
         onClick={() => handleDeleteRequest(client)}
         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
         disabled={state.isDeleting}
       >
         🗑️ Eliminar Cliente
-      </button>
+      </Button>
       {state.clientToDelete && (
         <ConfirmDeleteModal
           isOpen={showConfirmModal}

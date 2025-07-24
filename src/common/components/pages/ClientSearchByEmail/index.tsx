@@ -80,7 +80,6 @@ const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
             </motion.div>
           )}
         </AnimatePresence>
-
         {/* Logs */}
         <LogDisplay logs={logs} />
       </div>

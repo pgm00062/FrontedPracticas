@@ -37,7 +37,7 @@ const GetMerchantsByClientIdComponent: React.FC<Props> = ({
 
   const clearResults = () => {
     setLogs([]);
-    // No puedes limpiar merchants ni clientId porque vienen de SSR
+    // No se puede limpiar merchants ni clientId porque vienen de SSR
   };
 
   return (

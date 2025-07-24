@@ -13,33 +13,33 @@ import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 
 const { Title } = Typography;
 
-interface Props{
-  clients: ClientData[];
+interface Props {
+  initialClients: ClientData[];
+  initialQuery: string;
 }
 
-const ClientResultsClient: React.FC<Props> = ({ clients }) => {
+const ClientResultsClient: React.FC<Props> = ({ initialClients, initialQuery }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
-  const [query, setQuery] = useState('');
-  const [clientsState, setClientsState] = useState<ClientData[]>(clients); // estado inicial desde props
+  const [query, setQuery] = useState(initialQuery);
+  const [clients, setClients] = useState<ClientData[]>(initialClients);
   const [loading, setLoading] = useState(false);
 
-  // Búsqueda instantánea con debounce
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (query.trim().length > 1) {
-        setLoading(true);
-        fetch(`/api/search-client-by-name?name=${encodeURIComponent(query)}`)
-          .then(res => res.json())
-          .then(data => setClientsState(data.clients || []))
-          .finally(() => setLoading(false));
-      } else {
-        setClientsState([]);
-      }
-    }, 300);
 
+  useEffect(() => {
+    if (query.trim() === '') {
+      setClients(initialClients); // ← Muestra los recientes si el input está vacío
+      return;
+    }
+    const timeout = setTimeout(async () => {
+      setLoading(true);
+      const res = await fetch(`/api/search-client-by-name?name=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setClients(data.clients || []);
+      setLoading(false);
+    }, 350);
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, initialClients]);
 
   const addLog = (message: string) => {
     setLogs((prev) => [
@@ -55,7 +55,6 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
   const clearResults = () => {
     setLogs([]);
     setSelectedClient(null);
-    setClientsState([]);
     setQuery('');
   };
 
@@ -71,6 +70,7 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
         placeholder="Introduce el nombre del cliente..."
         value={query}
         onChange={e => setQuery(e.target.value)}
+        allowClear
         style={{ marginBottom: 16 }}
       />
       <SearchActions
@@ -81,7 +81,7 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
       />
 
       <AnimatePresence mode="wait">
-        {clientsState.length > 0 && (
+        {clients.length > 0 ? (
           <motion.div
             key="results"
             initial={{ opacity: 0, y: 8 }}
@@ -90,14 +90,12 @@ const ClientResultsClient: React.FC<Props> = ({ clients }) => {
             transition={{ duration: 0.3 }}
           >
             <ClientResultsList
-              clients={clientsState}
+              clients={clients}
               selectedClient={selectedClient}
               onSelectClient={handleSelectClient}
             />
           </motion.div>
-        )}
-
-        {!clientsState.length && logs.length > 0 && (
+        ) : (
           <motion.div
             key="notfound"
             initial={{ opacity: 0, y: 8 }}

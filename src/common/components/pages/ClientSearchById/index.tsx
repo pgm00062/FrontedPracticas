@@ -1,7 +1,6 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button,Input } from 'antd';
-import { toast } from 'sonner';
+import React, { useState } from 'react';
+import { Card, Typography } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import type { LogEntry, ClientData } from '../../../utils/commonInterface';
@@ -20,14 +19,9 @@ interface Props {
 }
 
 const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [lastResult, setLastResult] = useState<ClientData | null>(result);
-
-  useEffect(() => {
-    setLastResult(result);
+  const [logs, setLogs] = useState<LogEntry[]>(() => {
     if (clientId) {
-      setLogs((prev) => [
-        ...prev,
+      return [
         {
           id: crypto.randomUUID(),
           message: result
@@ -35,24 +29,36 @@ const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
             : `No se encontró cliente para ID: ${clientId}`,
           timestamp: new Date().toLocaleTimeString(),
         },
-      ]);
-      if (result) {
-        toast.success(`Cliente encontrado para ID: ${clientId}`);
-      } else {
-        toast.error(`No se encontró cliente para ID: ${clientId}`);
-      }
+      ];
     }
-  }, [result, clientId]);
+    return [];
+  });
+
+  const [lastResult] = useState<ClientData | null>(result);
 
   const clearResults = () => {
     setLogs([]);
-    setLastResult(null);
   };
 
   return (
     <Card>
       <Title level={4}>🆔 Buscar Cliente por ID</Title>
       <div className="space-y-4">
+        {/* Mensaje visual en vez de toast */}
+        {clientId && (
+          <div style={{ marginBottom: 12 }}>
+            {result ? (
+              <span style={{ color: 'green', fontWeight: 500 }}>
+                ✅ Cliente encontrado para ID: {clientId}
+              </span>
+            ) : (
+              <span style={{ color: 'red', fontWeight: 500 }}>
+                ❌ No se encontró cliente para ID: {clientId}
+              </span>
+            )}
+          </div>
+        )}
+
         <SearchActions
           logs={logs}
           lastResult={lastResult}

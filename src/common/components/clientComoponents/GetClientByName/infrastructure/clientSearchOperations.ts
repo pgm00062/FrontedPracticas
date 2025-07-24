@@ -33,7 +33,26 @@ export const searchClientByNameServer = async (
     }
     return [];
   } catch (error) {
-    // Opcional: puedes loguear el error en el servidor si lo necesitas
+
     return [];
+  } 
+};
+
+export const getRecentClientsServer = async (): Promise<ClientData[]> => {
+  const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
+  const jwt = jwtResponse.data.token;
+
+  const response = await clientServiceClient.get('/clients/recent', {//IMPLEMENTAR EN EL BACKEND
+    headers: {
+      'Authorization': `Bearer ${jwt}`,
+      'Content-Type': 'application/json'
+    },
+    timeout: 5000,
+    validateStatus: () => true
+  });
+
+  if (response.status === 200) {
+    return response.data as ClientData[];
   }
+  return [];
 };

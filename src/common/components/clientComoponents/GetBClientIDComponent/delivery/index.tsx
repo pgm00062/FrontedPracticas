@@ -7,7 +7,12 @@ interface Props {
 
 export default async function GetByIdClientId({ searchParams }: Props) {
   const clientId = searchParams.value?.trim() ?? '';
-  const result = clientId ? await searchClientByIdServer(clientId) : null;
+  
+  let result = null;
+  if (clientId) {
+    const searchResult = await searchClientByIdServer(clientId);
+    result = searchResult || null; 
+  }
 
   return <ClientResultById result={result} clientId={clientId} />;
 }
