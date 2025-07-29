@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReactQueryProvider from "../common/providers/ReactQueryProvider";
+import { ThemeProvider, useTheme } from "../common/providers/ThemeProvider";
+import ThemeToggleButton from "@/common/components/SharedComponents/ThemeToggleButton";
 import { SidebarProvider } from "@/common/components/SharedComponents/SideBarNavegation/delivery/components/sideBarContext";
 import LayoutWithSidebar from "./layoutSideBar";
 import PageTransitionWrapper from "@/common/components/SharedComponents/TransitionNavegation";
@@ -31,25 +33,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ReactQueryProvider>
-          <SidebarProvider>
-            <LayoutWithSidebar>
-              <PageTransitionWrapper>
-                  {children}
-              </PageTransitionWrapper>
-              </LayoutWithSidebar>
-          </SidebarProvider>
-        </ReactQueryProvider>
-        <Toaster
-          richColors
-          position="top-right"
-          duration={3000}
-          closeButton
-        />
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-black dark:text-white`}>
+        <ThemeProvider>
+          <ThemeToggleButton />
+          <ReactQueryProvider>
+            <SidebarProvider>
+              <LayoutWithSidebar>
+                <PageTransitionWrapper>
+                    {children}
+                </PageTransitionWrapper>
+                </LayoutWithSidebar>
+            </SidebarProvider>
+          </ReactQueryProvider>
+          <Toaster
+            richColors
+            position="top-right"
+            duration={3000}
+            closeButton
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
-

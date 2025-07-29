@@ -20,7 +20,10 @@ const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client, onDelet
 
     const handleConfirmDeleteAndNotify = async () => {
       const deleted = await handleConfirmDelete();
-      if (deleted && onDeleted) onDeleted();
+      if (deleted) {
+        handleReset(); // Resetea el estado interno del hook
+        if (onDeleted) onDeleted(); // Notifica al componente padre
+      }
     };
 
   return (
@@ -44,5 +47,4 @@ const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client, onDelet
     </div>
   );
 };
-
 export default ButtonDeleteClient;

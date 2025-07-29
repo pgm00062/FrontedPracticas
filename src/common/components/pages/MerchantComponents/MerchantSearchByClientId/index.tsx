@@ -1,10 +1,11 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react';
-import type { LogEntry, MerchantData } from '../../../../utils/commonInterface';
+import React, { useState, Suspense, lazy } from "react";
+import { Skeleton } from "antd";
+import type { LogEntry, MerchantData } from "../../../../utils/commonInterface";
 
-import SearchActions from './components/searchActions';
-import MerchantsResults from './components/merchantsResults';
+import SearchActions from "./components/searchActions";
+const MerchantsResults = lazy(() => import("./components/merchantsResults"));
 import LogDisplay from './components/logDisplay';
 import NotFoundMessage from './components/notFoundMessage';
 
@@ -51,7 +52,9 @@ const GetMerchantsByClientIdComponent: React.FC<Props> = ({
         onClearResults={clearResults}
         isSearching={false}
       />
-      <MerchantsResults merchants={merchants} />
+      <Suspense fallback={<div style={{ marginBottom: 16 }}><Skeleton active paragraph={{ rows: 2 }} /></div>}>
+        <MerchantsResults merchants={merchants} />
+      </Suspense>
       <NotFoundMessage
         logs={logs}
         lastResult={merchants}

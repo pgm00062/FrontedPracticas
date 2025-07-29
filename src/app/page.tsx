@@ -11,44 +11,27 @@ export default function Home() {
   return (
     <div>
       <HeaderComponent />
-      <div
-        style={{
-          minHeight: "calc(100vh - 64px)",
-          height: "100%",
-          width: "100%",
-          background: "#f5f7fa",
-        }}
-      >
+      <div className="min-h-[calc(100vh-64px)] h-full w-full bg-gray-50 dark:bg-gray-900">
         <Card
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 0,
-            boxShadow: "none",
-            padding: 0,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-          }}
-          bodyStyle={{ padding: 48, display: "flex", flexDirection: "column", height: "100%" }}
+          className="w-full h-full rounded-none shadow-none p-0 flex flex-col justify-start bg-white dark:bg-gray-800"
+          bodyStyle={{ padding: 48, display: "flex", flexDirection: "column", height: "100%", background: "inherit" }}
         >
           {/* Icono central y texto */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
+          <div className="flex flex-col items-center flex-1">
             <UserSwitchOutlined style={{ fontSize: 96, color: "#1677ff", marginBottom: 24 }} />
-            <Title level={2} style={{ marginBottom: 8, textAlign: "center" }}>
+            <Title level={2} style={{ marginBottom: 8, textAlign: "center" }} className="text-gray-900 dark:text-gray-100">
               Bienvenido al Sistema
             </Title>
-            <Paragraph type="secondary" style={{ marginBottom: 0, textAlign: "center", maxWidth: 480 }}>
+            <Paragraph type="secondary" style={{ marginBottom: 0, textAlign: "center", maxWidth: 480 }} className="text-gray-600 dark:text-gray-300">
               Administra usuarios, prueba conexiones y gestiona tu aplicación desde este panel centralizado.
             </Paragraph>
           </div>
           {/* Botones arriba */}
-          <div style={{ display: "flex", gap: 24, justifyContent: "center", marginBottom: 32 }}>
+          <div className="flex gap-6 justify-center mb-8">
             <ButtonClientService />
             <ButtonMerchantService />
           </div>
         </Card>
-        
       </div>
     </div>
   );

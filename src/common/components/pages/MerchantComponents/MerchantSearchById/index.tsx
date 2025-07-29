@@ -1,13 +1,15 @@
 'use client'
 
 import React, { useState } from 'react';
+import { Skeleton } from 'antd';
+import { useRouter } from 'next/navigation';
 import type { LogEntry, MerchantData } from '../../../../utils/commonInterface';
 import SearchForm from './components/searchForm';
 import SearchActions from './components/searchActions';
-import MerchantResult from './components/merchantResult';
+import { Suspense, lazy } from 'react';
+const MerchantResult = lazy(() => import('./components/merchantResult'));
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
-import { toast } from 'sonner';
 
 interface Props {
   initialClientId?: string;
@@ -22,56 +24,47 @@ const MerchantResultById: React.FC<Props> = ({
 }) => {
   const [clientId, setClientId] = useState(initialClientId);
   const [merchantId, setMerchantId] = useState(initialMerchantId);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const router = useRouter();
+  const [logs, setLogs] = useState<LogEntry[]>(() => {
+    const searchId = initialClientId || initialMerchantId;
+    if (searchId) {
+      const searchType = initialClientId ? 'ClientID' : 'MerchantID';
+      const message = initialResult
+        ? `Comerciante encontrado para ${searchType}: ${searchId}`
+        : `No se encontró comerciante para ${searchType}: ${searchId}`;
+      return [
+        {
+          id: crypto.randomUUID(),
+          message,
+        },
+      ];
+    }
+    return [];
+  });
+
   const [lastResult, setLastResult] = useState<MerchantData | null>(initialResult);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (searchClientId: string, searchMerchantId: string) => {
-    if (!searchClientId.trim() && !searchMerchantId.trim()) return;
-    setIsSearching(true);
-    setLogs([]);
-    setLastResult(null);
-
-    const params = new URLSearchParams();
-    if (searchClientId.trim()) params.append('clientId', searchClientId.trim());
-    if (searchMerchantId.trim()) params.append('merchantId', searchMerchantId.trim());
-
-    const response = await fetch(`/api/search-merchant-by-id?${params.toString()}`);
-    const data = await response.json();
-
-    setLastResult(data.merchant || null);
-
-    setLogs([
-      {
-        id: crypto.randomUUID(),
-        message: data.merchant
-          ? `Comerciante encontrado para ${searchClientId ? 'ClientID' : 'MerchantID'}: ${searchClientId || searchMerchantId}`
-          : `No se encontró comerciante para ${searchClientId ? 'ClientID' : 'MerchantID'}: ${searchClientId || searchMerchantId}`,
-      },
-    ]);
-
-    if (data.merchant) {
-      toast.success(
-        `Comerciante encontrado para ${searchClientId ? 'ClientID' : 'MerchantID'}: ${searchClientId || searchMerchantId}`
-      );
+  React.useEffect(() => {
+    // Re-inicializa logs y resultado cuando cambian los props
+    const searchId = initialClientId || initialMerchantId;
+    if (searchId) {
+      const searchType = initialClientId ? 'ClientID' : 'MerchantID';
+      const message = initialResult
+        ? `Comerciante encontrado para ${searchType}: ${searchId}`
+        : `No se encontró comerciante para ${searchType}: ${searchId}`;
+      setLogs([
+        {
+          id: crypto.randomUUID(),
+          message,
+        },
+      ]);
+      setLastResult(initialResult);
     } else {
-      toast.error(
-        `No se encontró comerciante para ${searchClientId ? 'ClientID' : 'MerchantID'}: ${searchClientId || searchMerchantId}`
-      );
+      setLogs([]);
+      setLastResult(null);
     }
-
-    setIsSearching(false);
-  };
-
-  const handleKeyPress = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    searchClientId: string,
-    searchMerchantId: string
-  ) => {
-    if (e.key === 'Enter') {
-      handleSearch(searchClientId, searchMerchantId);
-    }
-  };
+  }, [initialResult, initialClientId, initialMerchantId]);
 
   const clearResults = () => {
     setLogs([]);
@@ -80,9 +73,31 @@ const MerchantResultById: React.FC<Props> = ({
     setMerchantId('');
   };
 
+  const handleSearch = () => {
+    setLogs([]);
+    setLastResult(null);
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (clientId.trim()) params.append('clientId', clientId.trim());
+    if (merchantId.trim()) params.append('merchantId', merchantId.trim());
+    router.push(`?${params.toString()}`);
+    // Simula la carga SSR, desactiva el Skeleton después de un breve tiempo
+    setTimeout(() => {
+      setLoading(false);
+    }, 1200);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="card">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">🔎 Buscar Comerciante por ID o ClientID</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        🔎 Buscar Comerciante por ID o ClientID
+      </h2>
       <div className="space-y-4">
         <SearchForm
           clientId={clientId}
@@ -91,22 +106,33 @@ const MerchantResultById: React.FC<Props> = ({
           onMerchantIdChange={setMerchantId}
           onSearch={handleSearch}
           onKeyPress={handleKeyPress}
-          isSearching={isSearching}
+          isSearching={loading}
         />
         <SearchActions
           logs={logs}
           lastResult={lastResult}
           onClearResults={clearResults}
-          isSearching={isSearching}
+          isSearching={loading}
         />
-        <MerchantResult merchant={lastResult} />
-        <NotFoundMessage
-          logs={logs}
-          lastResult={lastResult}
-          isSearching={isSearching}
-          merchantId={merchantId}
-        />
-        <LogDisplay logs={logs} />
+        {/* Skeleton de carga visual mientras loading es true */}
+        {loading ? (
+          <div style={{ marginBottom: 16 }}>
+            <Skeleton active paragraph={{ rows: 2 }} />
+          </div>
+        ) : (
+          <>
+            <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
+              <MerchantResult merchant={lastResult} />
+            </Suspense>
+            <NotFoundMessage
+              logs={logs}
+              lastResult={lastResult}
+              isSearching={false}
+              merchantId={merchantId}
+            />
+            <LogDisplay logs={logs} />
+          </>
+        )}
       </div>
     </div>
   );

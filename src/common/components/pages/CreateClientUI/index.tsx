@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import type { ClientFormData, CreateClientResult } from '../../../utils/commonInterface';
 import { DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData } from './infrastructure/clientDataOperations';
 import { toast } from 'sonner';
+import { Button, Spin, Skeleton } from 'antd';
 
 import ClientFormFields from './components/clientFormFields';
 import FormActions from './components/formActions';
@@ -44,21 +45,36 @@ const CreateClientForm: React.FC = () => {
   };
 
   return (
-    <div className="card">
+    <div className="card" style={{ position: 'relative' }}>
       <h2 className="text-xl font-semibold mb-4 text-gray-800">👤 Crear Nuevo Cliente</h2>
-      <div className="space-y-6">
+      {/* Overlay de carga */}
+      {isCreating && (
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.6)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spin size="large" tip="Creando cliente..." />
+        </div>
+      )}
+      <div className="space-y-6" style={{ opacity: isCreating ? 0.5 : 1 }}>
         <ClientFormFields
           clientData={clientData}
           onInputChange={handleInputChange}
           onGenerateRandom={handleGenerateRandomClient}
           isDisabled={isCreating}
         />
-        <FormActions
-          onCreateClient={createClient}
-          isCreating={isCreating}
-          isFormValid={isFormValid()}
-        />
-        <ResultDisplay result={lastResult} />
+        {/* Botón con Spinner y deshabilitado */}
+        <Button
+          type="primary"
+          disabled={!isFormValid() || isCreating}
+          onClick={createClient}
+          block
+        >
+          {isCreating ? <Spin size="small" /> : 'Crear Cliente'}
+        </Button>
+        {/* Skeleton en el resultado */}
+        {isCreating ? (
+          <Skeleton active paragraph={{ rows: 1 }} />
+        ) : (
+          <ResultDisplay result={lastResult} />
+        )}
         <LogDisplay logs={logs} />
       </div>
     </div>

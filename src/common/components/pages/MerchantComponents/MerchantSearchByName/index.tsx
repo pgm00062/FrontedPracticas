@@ -1,10 +1,13 @@
 'use client'
 
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Skeleton } from 'antd';
+import debounce from 'lodash.debounce';
 import type { MerchantData, LogEntry } from '../../../../utils/commonInterface';
 import {Input} from 'antd';
 import SearchActions from './components/searchActions';
-import MerchantResultsList from './components/merchantResult';
+import { Suspense, lazy } from 'react';
+const MerchantResultsList = lazy(() => import('./components/merchantResult'));
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 
@@ -22,31 +25,37 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (query.trim().length > 1) {
+    // Debounced search function
+    const debouncedSearch = useMemo(() =>
+        debounce((searchTerm: string) => {
+            if (searchTerm.trim().length > 1) {
                 setLoading(true);
-                    fetch(`/api/search-merchant-by-name?name=${encodeURIComponent(query)}`)
+                fetch(`/api/search-merchant-by-name?name=${encodeURIComponent(searchTerm)}`)
                     .then((response) => response.json())
                     .then((data) => {
-                        console.log('API merchants:', data.merchants);
                         setSearchResults(Array.isArray(data.merchants) ? data.merchants : []);
                         setLastResult(
-                        Array.isArray(data.merchants) && data.merchants.length > 0
-                            ? data.merchants[data.merchants.length - 1]
-                            : null
+                            Array.isArray(data.merchants) && data.merchants.length > 0
+                                ? data.merchants[data.merchants.length - 1]
+                                : null
                         );
                     })
-                    .catch((error) => { /* ... */ })
+                    .catch(() => {})
                     .finally(() => {
                         setLoading(false);
                     });
             } else {
                 setSearchResults([]);
             }
-        }, 300);
-        return () => clearTimeout(timeout);
-    }, [query]);
+        }, 300)
+    , []);
+
+    useEffect(() => {
+        debouncedSearch(query);
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [query, debouncedSearch]);
 
     const clearResults = () => {
         setLogs([]);
@@ -90,11 +99,20 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
                     logs={logs}
                     lastResult={lastResult}
                 />
-                <MerchantResultsList
-                    merchants={searchResults}
-                    selectedMerchant={selectedMerchant}
-                    onSelectMerchant={handleSelectMerchant}
-                />
+                {/* Skeleton de carga visual mientras loading es true */}
+                {loading ? (
+                    <div style={{ marginBottom: 16 }}>
+                        <Skeleton active paragraph={{ rows: 2 }} />
+                    </div>
+                ) : (
+                    <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
+                        <MerchantResultsList
+                            merchants={searchResults}
+                            selectedMerchant={selectedMerchant}
+                            onSelectMerchant={handleSelectMerchant}
+                        />
+                    </Suspense>
+                )}
                 <NotFoundMessage
                     logs={logs}
                     lastResult={lastResult}

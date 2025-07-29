@@ -8,14 +8,17 @@ import GetMerchantsByClientIdComponent from '@/common/components/merchantCompone
 import MerchantTabs from '@/common/components/merchantComponents/MerchantTabs';
 
 interface Props {
-  searchParams?: { [key: string]: any };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function MerchantPage() {
+export default function MerchantPage({ searchParams }: Props) {
+  const safeSearchParams = searchParams ?? {};
+  console.log('MerchantPage received searchParams:', searchParams); // Debug log
+  
   const tabItems = [
     { key: 'create', label: 'Crear Merchant', children: <CreateMerchantComponent /> },
-    { key: 'getById', label: 'Buscar Merchant por ID', children: <GetByIdMerchantComponent /> },
-    { key: 'getByName', label: 'Buscar Merchant por Nombre', children: <GetByNameMerchantComponent /> },
+    { key: 'getById', label: 'Buscar Merchant por ID', children: <GetByIdMerchantComponent searchParams={searchParams} /> },
+    { key: 'getByName', label: 'Buscar Merchant por Nombre', children: <GetByNameMerchantComponent searchParams={safeSearchParams} /> },
     { key: 'update', label: 'Actualizar Merchant', children: <UpdateMerchantComponent /> },
     { key: 'getByClientId', label: 'Buscar Merchants por Cliente ID', children: <GetMerchantsByClientIdComponent /> },
     { key: 'test', label: 'Test Backend', children: <TestBackendConnection scope="merchant" /> },

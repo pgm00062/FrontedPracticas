@@ -1,10 +1,15 @@
-import { getRecentClientsServer } from '../infrastructure/clientSearchOperations';
+import { getRecentClientsServer, searchClientByNameServer } from '../infrastructure/clientSearchOperations';
 import ClientResultsClient from '../../../pages/ClientSearchByName';
 
-export default async function GetClientByName() {
+interface Props {
+  searchParams: { type?: string; value?: string };
+}
+
+export default async function GetClientByName({ searchParams }: Props) {
+  const initialQuery = searchParams.value?.trim() ?? '';
   const recentClients = await getRecentClientsServer();
 
   return (
-    <ClientResultsClient initialClients={recentClients} initialQuery={''} />
+    <ClientResultsClient initialClients={recentClients} initialQuery={initialQuery} />
   );
-}
+} 
