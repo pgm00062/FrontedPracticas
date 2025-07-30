@@ -13,7 +13,6 @@ interface Props {
 
 export default function MerchantPage({ searchParams }: Props) {
   const safeSearchParams = searchParams ?? {};
-  console.log('MerchantPage received searchParams:', searchParams); // Debug log
   
   const tabItems = [
     { key: 'create', label: 'Crear Merchant', children: <CreateMerchantComponent /> },

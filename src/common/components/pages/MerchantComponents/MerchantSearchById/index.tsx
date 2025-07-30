@@ -9,6 +9,7 @@ import SearchActions from './components/searchActions';
 import { Suspense, lazy } from 'react';
 const MerchantResult = lazy(() => import('./components/merchantResult'));
 import NotFoundMessage from './components/notFoundMessage';
+import ButtonUpdateMerchant from '@/common/components/merchantComponents/ButtonUpdateMerchant/delivery';
 import LogDisplay from './components/logDisplay';
 
 interface Props {
@@ -25,46 +26,9 @@ const MerchantResultById: React.FC<Props> = ({
   const [clientId, setClientId] = useState(initialClientId);
   const [merchantId, setMerchantId] = useState(initialMerchantId);
   const router = useRouter();
-  const [logs, setLogs] = useState<LogEntry[]>(() => {
-    const searchId = initialClientId || initialMerchantId;
-    if (searchId) {
-      const searchType = initialClientId ? 'ClientID' : 'MerchantID';
-      const message = initialResult
-        ? `Comerciante encontrado para ${searchType}: ${searchId}`
-        : `No se encontró comerciante para ${searchType}: ${searchId}`;
-      return [
-        {
-          id: crypto.randomUUID(),
-          message,
-        },
-      ];
-    }
-    return [];
-  });
-
-  const [lastResult, setLastResult] = useState<MerchantData | null>(initialResult);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [lastResult, setLastResult] = useState<MerchantData | null>(null);
   const [loading, setLoading] = useState(false);
-
-  React.useEffect(() => {
-    // Re-inicializa logs y resultado cuando cambian los props
-    const searchId = initialClientId || initialMerchantId;
-    if (searchId) {
-      const searchType = initialClientId ? 'ClientID' : 'MerchantID';
-      const message = initialResult
-        ? `Comerciante encontrado para ${searchType}: ${searchId}`
-        : `No se encontró comerciante para ${searchType}: ${searchId}`;
-      setLogs([
-        {
-          id: crypto.randomUUID(),
-          message,
-        },
-      ]);
-      setLastResult(initialResult);
-    } else {
-      setLogs([]);
-      setLastResult(null);
-    }
-  }, [initialResult, initialClientId, initialMerchantId]);
 
   const clearResults = () => {
     setLogs([]);
@@ -81,10 +45,7 @@ const MerchantResultById: React.FC<Props> = ({
     if (clientId.trim()) params.append('clientId', clientId.trim());
     if (merchantId.trim()) params.append('merchantId', merchantId.trim());
     router.push(`?${params.toString()}`);
-    // Simula la carga SSR, desactiva el Skeleton después de un breve tiempo
-    setTimeout(() => {
-      setLoading(false);
-    }, 1200);
+    setTimeout(() => setLoading(false), 600);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -116,17 +77,19 @@ const MerchantResultById: React.FC<Props> = ({
         />
         {/* Skeleton de carga visual mientras loading es true */}
         {loading ? (
-          <div style={{ marginBottom: 16 }}>
-            <Skeleton active paragraph={{ rows: 2 }} />
-          </div>
+          <Skeleton active paragraph={{ rows: 2 }} />
         ) : (
           <>
-            <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
-              <MerchantResult merchant={lastResult} />
-            </Suspense>
+            <MerchantResult merchant={initialResult} />
+            {/* Botón de actualizar merchant si hay resultado */}
+            <div style={{ display: "flex", gap: 16, marginTop: 24 }}>
+              {initialResult && initialResult.merchantId && (
+                  <ButtonUpdateMerchant merchant={initialResult} onBack={clearResults} />
+              )}
+            </div>
             <NotFoundMessage
               logs={logs}
-              lastResult={lastResult}
+              lastResult={initialResult}
               isSearching={false}
               merchantId={merchantId}
             />

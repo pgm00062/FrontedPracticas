@@ -5,9 +5,7 @@ import type { MerchantFormData, CreateMerchantResult } from '../../../../utils/c
 import { DEFAULT_MERCHANT_DATA, generateRandomMerchant } from './infrastructure/merchantDataOperations';
 import { toast } from 'sonner';
 import { Button, Spin, Skeleton } from 'antd';
-
 import MerchantFormFields from './components/merchantFormFields';
-import FormActions from './components/formActions';
 import ResultDisplay from './components/resultDisplay';
 import LogDisplay from './components/logDisplay';
 

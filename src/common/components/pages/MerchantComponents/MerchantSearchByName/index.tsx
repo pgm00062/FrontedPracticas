@@ -15,52 +15,31 @@ interface Props{
     merchants: MerchantData[];
 }
 
+import { useRouter } from 'next/navigation';
+
 const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [merchantName, setMerchantName] = useState('');
-    const [searchResults, setSearchResults] = useState<MerchantData[]>(merchants);
     const [lastResult, setLastResult] = useState<MerchantData | null>(null);
     const [selectedMerchant, setSelectedMerchant] = useState<MerchantData | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    // Debounced search function
-    const debouncedSearch = useMemo(() =>
-        debounce((searchTerm: string) => {
-            if (searchTerm.trim().length > 1) {
-                setLoading(true);
-                fetch(`/api/search-merchant-by-name?name=${encodeURIComponent(searchTerm)}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        setSearchResults(Array.isArray(data.merchants) ? data.merchants : []);
-                        setLastResult(
-                            Array.isArray(data.merchants) && data.merchants.length > 0
-                                ? data.merchants[data.merchants.length - 1]
-                                : null
-                        );
-                    })
-                    .catch(() => {})
-                    .finally(() => {
-                        setLoading(false);
-                    });
-            } else {
-                setSearchResults([]);
-            }
-        }, 300)
-    , []);
-
-    useEffect(() => {
-        debouncedSearch(query);
-        return () => {
-            debouncedSearch.cancel();
-        };
-    }, [query, debouncedSearch]);
+    // Actualiza la URL y deja que el server component haga la búsqueda
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setQuery(value);
+        setLoading(true);
+        router.push(`?name=${encodeURIComponent(value)}`);
+        // Simula un retardo de carga para mostrar el Skeleton
+        setTimeout(() => setLoading(false), 600);
+    };
 
     const clearResults = () => {
         setLogs([]);
         setLastResult(null);
-        setSearchResults([]);
         setSelectedMerchant(null);
     };
 
@@ -90,7 +69,7 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
                 <Input
                     placeholder="Introduce el nombre del cliente..."
                     value={query}
-                    onChange={e => setQuery(e.target.value)}
+                    onChange={handleInputChange}
                     style={{ marginBottom: 16 }}
                 />
                 <SearchActions
@@ -99,19 +78,14 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
                     logs={logs}
                     lastResult={lastResult}
                 />
-                {/* Skeleton de carga visual mientras loading es true */}
                 {loading ? (
-                    <div style={{ marginBottom: 16 }}>
-                        <Skeleton active paragraph={{ rows: 2 }} />
-                    </div>
+                    <Skeleton active paragraph={{ rows: 2 }} />
                 ) : (
-                    <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
-                        <MerchantResultsList
-                            merchants={searchResults}
-                            selectedMerchant={selectedMerchant}
-                            onSelectMerchant={handleSelectMerchant}
-                        />
-                    </Suspense>
+                    <MerchantResultsList
+                        merchants={merchants}
+                        selectedMerchant={selectedMerchant}
+                        onSelectMerchant={handleSelectMerchant}
+                    />
                 )}
                 <NotFoundMessage
                     logs={logs}

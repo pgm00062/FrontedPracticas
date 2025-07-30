@@ -2,7 +2,6 @@ import { Card } from "antd";
 import Title from "antd/es/typography/Title";
 import Paragraph from "antd/es/typography/Paragraph";
 import { UserSwitchOutlined } from "@ant-design/icons";
-import TestBackendConnection from "@/common/components/SharedComponents/TestBackendConnection";
 import ButtonMerchantService from "@/common/components/ButtonMerchantService";
 import ButtonClientService from "@/common/components/ButtonClientService";
 import HeaderComponent from '@/common/components/SharedComponents/HeaderComponen';

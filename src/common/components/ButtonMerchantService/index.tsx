@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation'; // ✅ App Router usa este
+import { useRouter } from 'next/navigation'; 
 
 const ButtonMerchantService: React.FC = () => {
-  const router = useRouter(); // ✅ válido en client components
+  const router = useRouter();
 
   return (
     <div className="card p-6 bg-white dark:bg-gray-800 rounded shadow">

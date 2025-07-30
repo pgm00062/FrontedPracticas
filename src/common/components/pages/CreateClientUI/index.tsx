@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { Button, Spin, Skeleton } from 'antd';
 
 import ClientFormFields from './components/clientFormFields';
-import FormActions from './components/formActions';
 import ResultDisplay from './components/resultDisplay';
 import LogDisplay from './components/logDisplay';
 
@@ -71,7 +70,7 @@ const CreateClientForm: React.FC = () => {
         </Button>
         {/* Skeleton en el resultado */}
         {isCreating ? (
-          <Skeleton active paragraph={{ rows: 1 }} />
+          <Skeleton active paragraph={{ rows: 1 }} /> 
         ) : (
           <ResultDisplay result={lastResult} />
         )}
@@ -80,5 +79,4 @@ const CreateClientForm: React.FC = () => {
     </div>
   );
 };
-
 export default CreateClientForm;

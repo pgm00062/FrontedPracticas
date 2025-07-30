@@ -20,60 +20,51 @@ interface Props {
 }
 
 const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
-  const [logs, setLogs] = useState<LogEntry[]>(() => {
-    if (clientId) {
-      return [
-        {
-          id: crypto.randomUUID(),
-          message: result
-            ? `Cliente encontrado para ID: ${clientId}`
-            : `No se encontró cliente para ID: ${clientId}`,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ];
-    }
-    return [];
-  });
-
-  const [lastResult, setLastResult] = useState<ClientData | null>(result);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [lastResult, setLastResult] = useState<ClientData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [inputId, setInputId] = useState(clientId);
+  const router = require('next/navigation').useRouter();
 
-  // Simula la carga visual cuando cambia el clientId o el resultado
-  React.useEffect(() => {
-    if (clientId) {
-      setLoading(true);
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1000); // 1 segundo de Skeleton
-      return () => clearTimeout(timer);
-    } else {
-      setLoading(false);
-    }
-  }, [clientId, result]);
+  const handleSearch = () => {
+    setLogs([]);
+    setLastResult(null);
+    setLoading(true);
+    router.push(`?clientId=${encodeURIComponent(inputId)}`);
+    setTimeout(() => setLoading(false), 600);
+  };
 
   const clearResults = () => {
     setLogs([]);
-    setLastResult(null); // Resetea también el resultado del cliente
+    setLastResult(null);
+    setInputId('');
   };
 
   return (
     <Card>
       <Title level={4}>🆔 Buscar Cliente por ID</Title>
       <div className="space-y-4">
+        <input
+          type="text"
+          value={inputId}
+          onChange={e => setInputId(e.target.value)}
+          placeholder="Introduce el ID del cliente..."
+          style={{ marginBottom: 16, width: '100%' }}
+        />
+        <button onClick={handleSearch} disabled={loading} style={{ marginBottom: 16 }}>
+          Buscar
+        </button>
         <SearchActions
           logs={logs}
           lastResult={lastResult}
           onClearResults={clearResults}
           isSearching={loading}
         />
-        {/* Skeleton de carga visual mientras loading es true */}
         {loading ? (
-          <div style={{ marginBottom: 16 }}>
-            <Skeleton active paragraph={{ rows: 2 }} />
-          </div>
+          <Skeleton active paragraph={{ rows: 2 }} />
         ) : (
           <AnimatePresence mode="wait">
-            {lastResult && (
+            {result && (
               <motion.div
                 key="found"
                 initial={{ opacity: 0, y: 8 }}
@@ -82,19 +73,19 @@ const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
                 transition={{ duration: 0.3 }}
               >
                 <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
-                  <ClientResult client={lastResult} />
+                  <ClientResult client={result} />
                 </Suspense>
                 <div style={{ display: "flex", gap: 16, marginTop: 24 }}>
-                  {lastResult && lastResult.id && (
+                  {result && result.id && (
                     <>
-                      <ButtonDeleteClient client={lastResult} onDeleted={clearResults} />
-                      <ButtonUpdateClient client={lastResult} onBack={clearResults} />
+                      <ButtonDeleteClient client={result} onDeleted={clearResults} />
+                      <ButtonUpdateClient client={result} onBack={clearResults} />
                     </>
                   )}
                 </div>
               </motion.div>
             )}
-            {!lastResult && logs.length > 0 && (
+            {!result && logs.length > 0 && (
               <motion.div
                 key="notfound"
                 initial={{ opacity: 0, y: 8 }}
@@ -104,9 +95,9 @@ const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
               >
                 <NotFoundMessage
                   logs={logs}
-                  lastResult={lastResult}
+                  lastResult={result}
                   isSearching={false}
-                  clientId={clientId}
+                  clientId={inputId}
                 />
               </motion.div>
             )}

@@ -1,5 +1,7 @@
 import { searchClientByIdServer } from '../infrastructure/clientSearchOperations';
 import ClientResultById from '../../../pages/ClientSearchById';
+import { Suspense } from 'react';
+import { Skeleton } from 'antd';
 
 interface Props {
   searchParams: { value?: string };
@@ -14,5 +16,9 @@ export default async function GetByIdClientId({ searchParams }: Props) {
     result = searchResult || null; 
   }
 
-  return <ClientResultById result={result} clientId={clientId} />;
+  return (
+    <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
+      <ClientResultById result={result} clientId={clientId} />
+    </Suspense>
+  );
 }

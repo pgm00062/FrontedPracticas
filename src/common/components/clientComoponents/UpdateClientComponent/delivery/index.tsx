@@ -1,5 +1,4 @@
 'use client'
-
 import SearchAndUpdateForm from './components/SearchAndUpdateForm';
 import ClientEditView from './components/ClientEditView';
 import ResultDisplay from './components/ResultDisplay';

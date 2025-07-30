@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
-import debounce from 'lodash.debounce';
-import { Card, Typography, Input, Skeleton } from 'antd';
+import React, { useState, lazy } from 'react';
+import { Card, Typography, Input} from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import SearchActions from './components/searchActions';
@@ -19,35 +18,19 @@ interface Props {
   initialQuery: string;
 }
 
+import { useRouter } from 'next/navigation';
+
 const ClientResultsClient: React.FC<Props> = ({ initialClients, initialQuery }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [query, setQuery] = useState(initialQuery);
-  const [clients, setClients] = useState<ClientData[]>(initialClients);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // Debounced search function
-  const debouncedSearch = useMemo(() =>
-    debounce(async (searchTerm: string) => {
-      if (searchTerm.trim() === '') {
-        setClients(initialClients);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const res = await fetch(`/api/search-client-by-name?name=${encodeURIComponent(searchTerm)}`);
-      const data = await res.json();
-      setClients(data.clients || []);
-      setLoading(false);
-    }, 350)
-  , [initialClients]);
-
-  useEffect(() => {
-    debouncedSearch(query);
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [query, debouncedSearch]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    router.push(`?type=name&value=${encodeURIComponent(value)}`);
+  };
 
   const addLog = (message: string) => {
     setLogs((prev) => [
@@ -77,7 +60,7 @@ const ClientResultsClient: React.FC<Props> = ({ initialClients, initialQuery }) 
       <Input
         placeholder="Introduce el nombre del cliente..."
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={handleInputChange}
         allowClear
         style={{ marginBottom: 16 }}
       />
@@ -85,44 +68,40 @@ const ClientResultsClient: React.FC<Props> = ({ initialClients, initialQuery }) 
         logs={logs}
         lastResult={selectedClient}
         onClearResults={clearResults}
-        isSearching={loading}
+        isSearching={false}
       />
-      <Skeleton loading={loading} active>
-        <AnimatePresence mode="wait">
-          {clients.length > 0 ? (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
-                <ClientResultsList
-                  clients={clients}
-                  selectedClient={selectedClient}
-                  onSelectClient={handleSelectClient}
-                />
-              </Suspense>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="notfound"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.3 }}
-            >
-              <NotFoundMessage
-                logs={logs}
-                lastResult={selectedClient}
-                isSearching={loading}
-                clientName={query}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Skeleton>
+      <AnimatePresence mode="wait">
+        {initialClients.length > 0 ? (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ClientResultsList
+              clients={initialClients}
+              selectedClient={selectedClient}
+              onSelectClient={handleSelectClient}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="notfound"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <NotFoundMessage
+              logs={logs}
+              lastResult={selectedClient}
+              isSearching={false}
+              clientName={query}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <LogDisplay logs={logs} />
     </Card>

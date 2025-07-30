@@ -7,9 +7,18 @@ interface Props {
 
 export default async function GetClientByName({ searchParams }: Props) {
   const initialQuery = searchParams.value?.trim() ?? '';
-  const recentClients = await getRecentClientsServer();
+  let clients;
+  if (initialQuery) {
+    clients = await searchClientByNameServer(initialQuery);
+    // Si no hay resultados, devuelve todos los clientes
+    if (!clients || clients.length === 0) {
+      clients = await getRecentClientsServer();
+    }
+  } else {
+    clients = await getRecentClientsServer();
+  }
 
   return (
-    <ClientResultsClient initialClients={recentClients} initialQuery={initialQuery} />
+    <ClientResultsClient initialClients={clients} initialQuery={initialQuery} />
   );
 } 

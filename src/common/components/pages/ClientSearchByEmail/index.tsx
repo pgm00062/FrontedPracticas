@@ -1,9 +1,8 @@
 'use client';
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, {useState, Suspense, lazy } from 'react';
 import { Skeleton } from 'antd';
 import { Card,Typography } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
 import SearchActions from './components/searchActions';
 const ClientResult = lazy(() => import('./components/clientResult'));
 import NotFoundMessage from './components/notFoundMessage';
@@ -18,49 +17,50 @@ interface Props {
 
 const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [lastResult, setLastResult] = useState<ClientData | null>(result);
+  const [lastResult, setLastResult] = useState<ClientData | null>(null);
   const [loading, setLoading] = useState(false);
-
-
+  const [inputEmail, setInputEmail] = useState(email);
+  const router = require('next/navigation').useRouter();
   const { Title } = Typography;
-  useEffect(() => {
+
+  const handleSearch = () => {
+    setLogs([]);
+    setLastResult(null);
     setLoading(true);
-    setLastResult(result);
-    if (email) {
-      if (result) {
-        toast.success(`Cliente encontrado para email: ${email}`);
-      } else {
-        toast.error(`No se encontró cliente para email: ${email}`);
-      }
-    }
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // 1 segundo de Skeleton
-    return () => clearTimeout(timer);
-  }, [result, email]);
+    router.push(`?email=${encodeURIComponent(inputEmail)}`);
+    setTimeout(() => setLoading(false), 600);
+  };
 
   const clearResults = () => {
     setLogs([]);
     setLastResult(null);
+    setInputEmail('');
   };
   return (
     <Card>
       <div className="space-y-4">
         <Title level={4}>📧 Buscar Cliente por Email</Title>
+        <input
+          type="text"
+          value={inputEmail}
+          onChange={e => setInputEmail(e.target.value)}
+          placeholder="Introduce el email del cliente..."
+          style={{ marginBottom: 16, width: '100%' }}
+        />
+        <button onClick={handleSearch} disabled={loading} style={{ marginBottom: 16 }}>
+          Buscar
+        </button>
         <SearchActions
           logs={logs}
           lastResult={lastResult}
           onClearResults={clearResults}
           isSearching={loading}
         />
-        {/* Skeleton de carga visual mientras loading es true */}
         {loading ? (
-          <div style={{ marginBottom: 16 }}>
-            <Skeleton active paragraph={{ rows: 2 }} />
-          </div>
+          <Skeleton active paragraph={{ rows: 2 }} />
         ) : (
           <AnimatePresence mode="wait">
-            {lastResult && (
+            {result && (
               <motion.div
                 key="found"
                 initial={{ opacity: 0, y: 8 }}
@@ -69,11 +69,11 @@ const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
                 transition={{ duration: 0.3 }}
               >
                 <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
-                  <ClientResult client={lastResult} />
+                  <ClientResult client={result} />
                 </Suspense>
               </motion.div>
             )}
-            {!lastResult && logs.length > 0 && (
+            {!result && logs.length > 0 && (
               <motion.div
                 key="notfound"
                 initial={{ opacity: 0, y: 8 }}
@@ -83,9 +83,9 @@ const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
               >
                 <NotFoundMessage
                   logs={logs}
-                  lastResult={lastResult}
+                  lastResult={result}
                   isSearching={false}
-                  clientEmail={email}
+                  clientEmail={inputEmail}
                 />
               </motion.div>
             )}

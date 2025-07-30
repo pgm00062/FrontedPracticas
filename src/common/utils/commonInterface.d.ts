@@ -73,3 +73,21 @@ export interface JWTMerchantData {
     address: string;
     merchantType: MerchantType;
 }
+export interface UpdateMerchantData {
+    merchantId: string;
+    clientId: string;
+    name: string;
+    address: string;
+    merchantType: MerchantType;
+}
+export interface UpdateMerchantState {
+    searchClientId: string;
+    searchMerchantId: string;
+    isSearching: boolean;
+    currentMerchant: UpdateMerchantData | null;
+    updatedMerchant: UpdateMerchantData | null;
+    isUpdating: boolean;
+    logs: string[];
+    result: any; 
+    showInstructions: boolean;
+}

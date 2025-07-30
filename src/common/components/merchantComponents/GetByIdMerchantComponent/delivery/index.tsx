@@ -1,5 +1,7 @@
 import MerchantResultById from '../../../pages/MerchantComponents/MerchantSearchById';
 import { searchMerchantByIdServer } from '../infrastructure/merchantSearchOperations';
+import { Suspense } from 'react';
+import { Skeleton } from 'antd';
 
 interface Props {
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -16,10 +18,12 @@ export default async function GetByIdMerchantServer({ searchParams }: Props) {
   }
 
   return (
-    <MerchantResultById
-      initialClientId={clientId}
-      initialMerchantId={merchantId}
-      initialResult={result}
-    />
+    <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>
+      <MerchantResultById
+        initialClientId={clientId}
+        initialMerchantId={merchantId}
+        initialResult={result}
+      />
+    </Suspense>
   );
 }

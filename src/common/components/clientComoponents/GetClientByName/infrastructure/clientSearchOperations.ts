@@ -11,7 +11,7 @@ const DEFAULT_JWT_CLIENT_DATA: JWTClientData = {
     merchantType: null
 };
 
-// Función principal para buscar cliente por nombre parcial (sin logs, para Server Component)
+// Función principal para buscar cliente por nombre parcial 
 export const searchClientByNameServer = async (
   name: string
 ): Promise<ClientData[]> => {
@@ -42,7 +42,7 @@ export const getRecentClientsServer = async (): Promise<ClientData[]> => {
   const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
   const jwt = jwtResponse.data.token;
 
-  const response = await clientServiceClient.get('/clients/recent', {//IMPLEMENTAR EN EL BACKEND
+  const response = await clientServiceClient.get('/clients/recent', {
     headers: {
       'Authorization': `Bearer ${jwt}`,
       'Content-Type': 'application/json'
