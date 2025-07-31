@@ -2,7 +2,7 @@ import {MerchantType} from '../../../../../utils/enums/merchant.enum';
 import type { MerchantFormData } from '../../../../../utils/commonInterface';
 // Datos por defecto para el formulario
 export const DEFAULT_MERCHANT_DATA: MerchantFormData = {
-  clientId: '123545', // ID de cliente por defecto  
+  clientId: '123545',   
   name: 'Debug Merchant',
   address: 'Calle Falsa 123',
   merchantType: MerchantType.MERCHANT_TYPE_PERSONAL_SERVICES
@@ -29,21 +29,18 @@ export const transformMerchantForCreation = (
   data: MerchantFormData,
 ) => {
   return {
-    // 🔹 Campos de negocio
     clientId:data.clientId,
     name: data.name,
     address: data.address,
     merchantType: data.merchantType,
     status: 'ACTIVE' as const,
 
-    // 🔹 Índices para búsqueda
-    gIndex2Pk: data.name.toLowerCase(), // Para GSI_Email (opcional, depende de tu lógica real)
+    gIndex2Pk: data.name.toLowerCase(), 
     GSI_PK: 'CLIENT#',
     GSI_Name: data.name.toLowerCase(),
   };
 };
 
-// 🔹 Debug para inspeccionar datos transformados
 export const logMerchantDataTransformation = (
   original: MerchantFormData,
 ): void => {

@@ -34,7 +34,7 @@ export const searchMerchantsByClientIdServer = async (
                     "Content-Type": "application/json",
                 },
                 timeout: 5000,
-                validateStatus: () => true, // Aceptar cualquier status code
+                validateStatus: () => true, 
             }
         );
         if (response.status === 200) {

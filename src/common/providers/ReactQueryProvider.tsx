@@ -27,7 +27,7 @@ export default function ReactQueryProvider({
             refetchOnMount: true,
             refetchOnReconnect: true,
           },
-          mutations: { //configura operaciones de escritura(POST, PUT, DELETE) con un 1 reintento
+          mutations: { 
             retry: 1,
           },
         },

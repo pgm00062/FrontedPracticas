@@ -22,11 +22,11 @@ export interface UpdateMerchantState {
     isUpdating: boolean;
     logs: string[];
     result: any; 
-    showInstructions: boolean; // Para mostrar u ocultar instrucciones
+    showInstructions: boolean; 
 }
 
 export interface MerchantUpdateRequest {
-    merchantId: string; // No se modifica, solo datos del merchant
+    merchantId: string; 
     merchantData: {
         name: string;
         address: string;

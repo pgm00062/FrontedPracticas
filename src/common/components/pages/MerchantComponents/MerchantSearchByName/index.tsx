@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Skeleton } from 'antd';
-import debounce from 'lodash.debounce';
 import type { MerchantData, LogEntry } from '../../../../utils/commonInterface';
 import {Input} from 'antd';
 import SearchActions from './components/searchActions';
-import { Suspense, lazy } from 'react';
+import {lazy } from 'react';
 const MerchantResultsList = lazy(() => import('./components/merchantResult'));
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
@@ -27,13 +26,12 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // Actualiza la URL y deja que el server component haga la búsqueda
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setQuery(value);
         setLoading(true);
         router.push(`?name=${encodeURIComponent(value)}`);
-        // Simula un retardo de carga para mostrar el Skeleton
+        // Simula un retardo 
         setTimeout(() => setLoading(false), 600);
     };
 
@@ -64,7 +62,6 @@ const GetByNameMerchantComponent: React.FC<Props> = ({ merchants }) => {
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
                 🏪 Buscar Comerciante por nombre
             </h2>
-
             <div className="mb-4">
                 <Input
                     placeholder="Introduce el nombre del cliente..."

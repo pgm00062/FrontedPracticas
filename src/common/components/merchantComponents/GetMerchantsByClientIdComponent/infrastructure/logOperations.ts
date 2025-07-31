@@ -1,6 +1,5 @@
 import type { LogEntry } from '../../../../utils/commonInterface';
 
-// Función para crear entrada de log
 export const createLogEntry = (message: string): LogEntry => {
     const timestamp = new Date().toLocaleTimeString();
     return {
@@ -9,7 +8,6 @@ export const createLogEntry = (message: string): LogEntry => {
     };
 };
 
-// Función para obtener la clase CSS del log
 export const getLogClassName = (log: LogEntry): string => {
     let logClassName = 'text-xs font-mono p-2 rounded ';
     
@@ -22,6 +20,5 @@ export const getLogClassName = (log: LogEntry): string => {
     } else {
         logClassName += 'text-gray-600 bg-white';
     }
-    
     return logClassName;
 };

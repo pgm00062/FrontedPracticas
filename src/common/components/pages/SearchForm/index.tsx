@@ -19,7 +19,7 @@ export default function SearchForm() {
     setSearchType(v);
     setSearchValue('');
     if (v === 'none') {
-      router.push('/client-microservice'); // Navega a la ruta base sin parámetros
+      router.push('/client-microservice'); 
     } else {
       router.push('/client-microservice?type=' + v);
     }
