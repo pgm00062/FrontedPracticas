@@ -38,6 +38,27 @@ export interface ClientInputDto {
   age: string;
 }
 
+export interface ClientInputRegisterDto{
+  name: string;
+  surname: string;
+  cifNifNie: string;
+  phone: string;
+  email: string;
+  age: string;
+  password: string; // Añadido para el registro
+}
+
+export interface ClientInputLoginDto {
+  email: string;
+  password: string; // Añadido para el login
+}
+
+export interface ClientOutputLoginDto {
+  name: string;
+  surname: string;
+  message: string;
+}
+
 export interface ClientOutputDto {
   id: number;
   name: string;

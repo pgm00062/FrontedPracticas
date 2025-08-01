@@ -30,7 +30,13 @@ export const API_ENDPOINTS = {
 
     // DELETE /clients/{id} - Eliminar cliente
     DELETE: (id: string | number) => `/clients/${id}`,
+
+    // REGISTER: '/clients/register', - Registro de cliente 
+    REGISTER: '/clients/register',
     
+    // LOGIN: '/clients/login', - Login de cliente
+    LOGIN: '/clients/login',
+
     // Health check
     HEALTH: '/health',
   },

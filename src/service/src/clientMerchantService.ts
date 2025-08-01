@@ -15,7 +15,10 @@ import {
   MerchantInputDto,
   MerchantOutputDto,
   MerchantOutputIdDto,
-  MerchantInputUpdateDto
+  MerchantInputUpdateDto,
+  ClientInputRegisterDto,
+  ClientInputLoginDto,
+  ClientOutputLoginDto
 } from '../../common/types/entities';
 
 // Servicio de Clientes - 
@@ -83,6 +86,24 @@ export const ClientService = {
     return del<void>(  
       clientServiceClient,
       API_ENDPOINTS.CLIENTS.DELETE(id)
+    );
+  },
+
+  // POST /clients/register - Registro de cliente
+  registerClient: async (clientData: ClientInputRegisterDto): Promise<ApiResponse<ClientOutputDto>> => {
+    return post<ApiResponse<ClientOutputDto>>(
+      clientServiceClient,
+      API_ENDPOINTS.CLIENTS.REGISTER,
+      clientData
+    );
+  },
+
+  // POST /clients/login - Login de cliente
+  loginClient: async (loginData: ClientInputLoginDto): Promise<ApiResponse<ClientOutputLoginDto>> => {
+    return post<ApiResponse<ClientOutputLoginDto>>(
+      clientServiceClient,
+      API_ENDPOINTS.CLIENTS.LOGIN,
+      loginData
     );
   },
 
