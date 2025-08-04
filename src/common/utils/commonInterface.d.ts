@@ -46,6 +46,18 @@ export interface CreateClientResult {
   error?: string;
 }
 
+//LOGIN CLIENTES
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+export interface LoginResult {
+  success: boolean;
+  client?: any;
+  jwt?: string;
+  error?: string;
+}
+
 //=============================
 //==========MERCHANT===========
 //=============================

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message, InputNumber } from "antd";
+import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
 
@@ -10,26 +11,53 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [form] = Form.useForm();
+  const router = useRouter();
 
-    const [logs, setLogs] = useState<string[]>([]);
-    const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   const onFinish = async (values: any) => {
-    console.log('Valores del formulario:', values);
     setIsCreating(true);
-    const response = await fetch('/api/register-client', {
-      method: 'POST',
-      body: JSON.stringify(values),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data = await response.json();
-    setIsCreating(false);
-    setLogs((prev) => [...prev, JSON.stringify(data)]);
-    if (data.success) {
-      message.success('Registro completado con éxito');
-      form.resetFields();
-    } else {
-      message.error(data.error || 'Error al registrar el cliente');
+    
+    try {
+      const response = await fetch('/api/register-client', {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        message.success('✅ Registro completado con éxito');
+        form.resetFields();
+        setIsRedirecting(true);
+        
+        const hide = message.loading({
+          content: '🏠 Redirigiendo a la página principal en 2 segundos...',
+          duration: 2,
+          onClose: () => {
+            router.push('/');
+          }
+        });
+        
+        // Redireccionar automáticamente después de 2 segundos
+        setTimeout(() => {
+          hide();
+          router.push('/');
+        }, 2000);
+      } else {
+        const errorMessage = data.error || 'Error desconocido al registrar el cliente';
+        message.error(`❌ ${errorMessage}`);
+      }
+    } catch (error) {
+      const errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      message.error(errorMessage);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -70,11 +98,37 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           <Input.Password />
         </Form.Item>
         <Form.Item style={{ marginBottom: 0 }}>
-          <Button type="primary" htmlType="submit" className="w-full bg-green-600 hover:bg-green-700">
-            Registrarse
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            className="w-full bg-green-600 hover:bg-green-700"
+            loading={isCreating}
+            disabled={isCreating || isRedirecting}
+          >
+            {(() => {
+              if (isRedirecting) return 'Redirigiendo...';
+              if (isCreating) return 'Registrando...';
+              return 'Registrarse';
+            })()}
           </Button>
         </Form.Item>
       </Form>
+      
+      {isRedirecting && (
+        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-green-700 text-center mb-3">
+            ¡Registro exitoso! 🎉
+          </p>
+          <Button 
+            type="primary" 
+            onClick={() => router.push('/')}
+            className="w-full bg-blue-600 hover:bg-blue-700"
+          >
+            Ir a la página principal ahora
+          </Button>
+        </div>
+      )}
+      
       <div className="mt-6 text-center">
         <span>¿Ya tienes cuenta?</span>
         <Button type="link" onClick={onSwitchToLogin} className="ml-2 text-green-600">

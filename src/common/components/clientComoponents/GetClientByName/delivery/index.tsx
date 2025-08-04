@@ -10,7 +10,6 @@ export default async function GetClientByName({ searchParams }: Props) {
   let clients;
   if (initialQuery) {
     clients = await searchClientByNameServer(initialQuery);
-    // Si no hay resultados, devuelve todos los clientes
     if (!clients || clients.length === 0) {
       clients = await getRecentClientsServer();
     }
