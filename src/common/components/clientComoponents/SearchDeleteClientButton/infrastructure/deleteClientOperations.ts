@@ -1,51 +1,28 @@
-import { clientServiceClient } from '@/common/utils/httpClient';
-import { API_ENDPOINTS } from '@/common/utils/apiConfig';
-
-export const DEFAULT_JWT_CLIENT_DATA = {
-  name: 'Debug Cliente',
-  surname: 'Test',
-  age: 30,
-  cifNifNie: '12345678A',
-  email: 'debug@test.com',
-  phone: '123456789',
-  merchantType: null
-};
+import Service from '@/service/src';
 
 export const deleteClientById = async (
   id: string,
+  token: string | undefined,
   onLog: (message: string) => void  
 ): Promise<{ success: boolean; error?: string }> => {
   onLog(`🗑️ Eliminando cliente con ID: ${id}`);
 
   try {
-    // 🔑 Generar JWT para eliminación
-    onLog('🔑 Generando JWT para eliminación...');
 
-    // ✅ CORREGIDO: Usar DEFAULT_JWT_CLIENT_DATA
-    const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
-    
-    if (jwtResponse.status !== 200) {
-      onLog(`❌ Error generando JWT: ${jwtResponse.status}`);
-      return { success: false, error: `Error generando JWT: ${jwtResponse.status}` };
+    if(!token) {
+      onLog('❌ No se encontró token de autenticación');
+      return { success: false, error: 'Token de autenticación requerido' };
     }
-
-    const jwt = jwtResponse.data.token;
-    onLog(`✅ JWT generado correctamente`);
 
     // 🗑️ Eliminar cliente
     onLog(`🗑️ Enviando DELETE a: /clients/${id}`);
 
-    const response = await clientServiceClient.delete(
-      API_ENDPOINTS.CLIENTS.DELETE(id),
-      {
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 5000,
-        validateStatus: () => true
-      }
-    );
+    const response: any = await Service.getCases('deleteClient', {
+      signal: undefined,
+      endPointData: { id },  
+      body: null,            
+      token,
+    });
 
     onLog(`📡 Respuesta del servidor: ${response.status} - ${response.statusText}`);
 

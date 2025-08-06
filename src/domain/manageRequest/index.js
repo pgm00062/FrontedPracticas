@@ -37,7 +37,7 @@ const manageRequest = async (
       cache,
       headers: token
         ? {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
             Tokenid: token,
             ...headers,
           }

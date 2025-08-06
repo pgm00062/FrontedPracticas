@@ -3,7 +3,7 @@ import React, { useState, Suspense, lazy } from 'react';
 import { Skeleton } from 'antd';
 import { Card, Typography } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { useService } from '@/common/hooks/useService';
 import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 import SearchActions from './components/searchActions';
 const ClientResult = lazy(() => import('./components/clientResult'));
@@ -11,27 +11,35 @@ import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
 import ButtonDeleteClient from "@/common/components/clientComoponents/SearchDeleteClientButton/delivery";
 import ButtonUpdateClient from "@/common/components/clientComoponents/searchUpdateButtonComponent/delivery";
-
+import { toast } from 'sonner';
+import type { Props } from './interface';
 const { Title } = Typography;
 
-interface Props {
-  result: ClientData | null;
-  clientId: string;
-}
-
 const ClientResultById: React.FC<Props> = ({ result, clientId }) => {
+  console.log('Props recibidas en ClientResultById:', { result, clientId });
+  
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [lastResult, setLastResult] = useState<ClientData | null>(null);
   const [loading, setLoading] = useState(false);
   const [inputId, setInputId] = useState(clientId);
   const router = require('next/navigation').useRouter();
+  const { executeUseCase} = useService();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setLogs([]);
     setLastResult(null);
     setLoading(true);
-    router.push(`?clientId=${encodeURIComponent(inputId)}`);
-    setTimeout(() => setLoading(false), 600);
+
+    try {
+      const client: any = await executeUseCase('getClientById', { id: inputId });
+      setLastResult(client);
+    } catch (error: any) {
+        const errorMessage = error.body?.error || error.statusText || 'Error al buscar cliente';
+        toast.error(`❌ ${errorMessage}`);
+    } finally {
+      setLoading(false);
+      router.push(`?clientId=${encodeURIComponent(inputId)}`);
+    }
   };
 
   const clearResults = () => {

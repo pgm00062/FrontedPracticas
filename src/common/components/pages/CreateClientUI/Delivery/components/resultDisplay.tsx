@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Alert, Card, Typography } from 'antd';
-import type { CreateClientResult } from '../../../../utils/commonInterface';
+import type { CreateClientResult } from '../../../../../utils/commonInterface';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const { Paragraph, Text } = Typography;

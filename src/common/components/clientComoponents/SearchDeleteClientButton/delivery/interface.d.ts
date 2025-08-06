@@ -1,3 +1,8 @@
+export interface ButtonDeleteClientProps {
+  client: ClientDeleteData;
+  onDeleted?: () => void; // Callback when deletion is confirmed
+}
+
 export interface ClientDeleteData{
     id: string;
     name: string;

@@ -1,35 +1,44 @@
 'use client';
-
-import React, { useState, lazy } from 'react';
+import  { useState, lazy,FC } from 'react';
 import { Card, Typography, Input} from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { toast } from 'sonner';
 import SearchActions from './components/searchActions';
 const ClientResultsList = lazy(() => import('./components/clientResult'));
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
-
+import { useService } from '@/common/hooks/useService';
+import type { Props } from './interface';
 import type { LogEntry, ClientData } from '../../../utils/commonInterface';
 
 const { Title } = Typography;
 
-interface Props {
-  initialClients: ClientData[];
-  initialQuery: string;
-}
-
 import { useRouter } from 'next/navigation';
 
-const ClientResultsClient: React.FC<Props> = ({ initialClients, initialQuery }) => {
+const ClientResultsClient: FC<Props> = ({ initialClients, initialQuery }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [query, setQuery] = useState(initialQuery);
   const router = useRouter();
+  const { executeUseCase } = useService();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [clients, setClients] = useState<ClientData[]>(initialClients);
+
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    router.push(`?type=name&value=${encodeURIComponent(value)}`);
+
+    try {
+      const result: any = await executeUseCase('getClientByName', value);
+      setClients(result?.data || []);
+      setSelectedClient(null);
+    } catch (error: any) {
+      const errorMessage = error.body?.error || error.statusText || 'Error al buscar cliente';
+      //toast.error(`❌ ${errorMessage}`);
+      setClients([]);
+    } finally {
+      router.push(`?type=name&value=${encodeURIComponent(value)}`);
+    }
   };
 
   const addLog = (message: string) => {

@@ -2,10 +2,7 @@ import { searchClientByIdServer } from '../infrastructure/clientSearchOperations
 import ClientResultById from '../../../pages/ClientSearchById';
 import { Suspense } from 'react';
 import { Skeleton } from 'antd';
-
-interface Props {
-  searchParams: { value?: string };
-}
+import type {Props} from './interface';
 
 export default async function GetByIdClientId({ searchParams }: Props) {
   const clientId = searchParams.value?.trim() ?? '';
@@ -14,6 +11,7 @@ export default async function GetByIdClientId({ searchParams }: Props) {
   if (clientId) {
     const searchResult = await searchClientByIdServer(clientId);
     result = searchResult || null; 
+    console.log('Resultado en Server Component:', { clientId, result });
   }
 
   return (

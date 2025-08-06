@@ -5,15 +5,17 @@ import type { MerchantFormData, CreateMerchantResult } from '../../../../utils/c
 import { DEFAULT_MERCHANT_DATA, generateRandomMerchant } from './infrastructure/merchantDataOperations';
 import { toast } from 'sonner';
 import { Button, Spin, Skeleton } from 'antd';
+import { useService } from '@/common/hooks/useService';
 import MerchantFormFields from './components/merchantFormFields';
 import ResultDisplay from './components/resultDisplay';
 import LogDisplay from './components/logDisplay';
 
 const CreateMerchantComponent: React.FC = () => {
-    const [logs, setLogs] = useState<string[]>([]);
+    const [logs] = useState<string[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [lastResult, setLastResult] = useState<CreateMerchantResult | null>(null);
     const [merchantData, setMerchantData] = useState<MerchantFormData>(DEFAULT_MERCHANT_DATA);
+    const { executeUseCase } = useService();
 
     const handleInputChange = (field: keyof MerchantFormData, value: string | number) =>{
         setMerchantData(prev => ({ ...prev, [field]: value }));
@@ -33,19 +35,22 @@ const CreateMerchantComponent: React.FC = () => {
 
     const createMerchant = async () => {
         setIsCreating(true);
-        const response = await fetch('/api/create-merchant', {
-            method: 'POST',
-            body: JSON.stringify(merchantData),
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const result: CreateMerchantResult = await response.json();
-        setLastResult(result);
-        setIsCreating(false);
-
-        if (!result.success) {
-            toast.error(result.error || '❌ Error desconocido al crear comerciante');
-        } else {
-            toast.success('Comerciante creado correctamente');
+        
+        try {
+            const response: any = await executeUseCase('createMerchant', merchantData);
+            setLastResult(response.data);
+            
+            if (!response.data?.success) {
+                toast.error(response.data?.error || '❌ Error desconocido al crear comerciante');
+            } else {
+                toast.success('Comerciante creado correctamente');
+            }
+        } catch (error: any) {
+            const errorMessage = error.body?.error || error.statusText || 'Error de conexión';
+            toast.error(`❌ ${errorMessage}`);
+            setLastResult({ success: false, error: errorMessage });
+        } finally {
+            setIsCreating(false);
         }
     };
 

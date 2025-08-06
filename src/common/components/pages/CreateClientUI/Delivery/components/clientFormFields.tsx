@@ -1,14 +1,10 @@
 import React from 'react';
 import { Button, Input, Form, InputNumber, Row, Col } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
-import type { ClientFormData } from '../../../../utils/commonInterface';
+import type { ClientFormData } from '../../../../../utils/commonInterface';
+import { ClientFormFieldsProps } from '../interface';
 
-interface ClientFormFieldsProps {
-  clientData: ClientFormData;
-  onInputChange: (field: keyof ClientFormData, value: string | number) => void;
-  onGenerateRandom: () => void;
-  isDisabled: boolean;
-}
+
 
 const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
   clientData,

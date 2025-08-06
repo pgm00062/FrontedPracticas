@@ -1,14 +1,8 @@
-import React from 'react';
+import { FC } from 'react';
 import {Input, Form, Row, Col } from 'antd';
-import type { MerchantFormData } from '@/common/utils/commonInterface';
+import type { MerchantFormFieldsProps } from '../interface';
 
-interface MerchantFormFieldsProps {
-    merchantData: MerchantFormData;
-    onInputChange: (field: keyof MerchantFormData, value: string | number) => void;
-    isDisabled?: boolean;
-}
-
-const MerchantFormFields: React.FC<MerchantFormFieldsProps> = ({
+const MerchantFormFields: FC<MerchantFormFieldsProps> = ({
     merchantData,
     onInputChange,
     isDisabled = false,

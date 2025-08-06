@@ -4,16 +4,7 @@ import { Tabs } from "antd";
 import Title from "antd/es/typography/Title";
 import { UserSwitchOutlined } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
-
-interface TabItem {
-  key: string;
-  label: string;
-  children: React.ReactNode;
-}
-
-interface MerchantTabsProps {
-  tabItems: TabItem[];
-}
+import type { TabItem, MerchantTabsProps } from "./interface";
 
 export default function MerchantTabs({ tabItems }: MerchantTabsProps) {
   const [activeKey, setActiveKey] = useState<string | undefined>(undefined);

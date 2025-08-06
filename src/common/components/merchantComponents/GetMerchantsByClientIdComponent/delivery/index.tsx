@@ -1,10 +1,7 @@
 import GetMerchantsByClientIdComponent from '../../../pages/MerchantComponents/MerchantSearchByClientId';
 import { searchMerchantsByClientIdServer } from '../infrastructure/merchantsClientIdSearchOperations';
 import type { MerchantData } from '../../../../utils/commonInterface';
-
-interface Props {
-  searchParams?: { clientId?: string };
-}
+import type { Props } from './interface';
 
 export default async function GetMerchantsByClientIdServer({ searchParams }: Props) {
   const clientId = searchParams?.clientId?.trim() || '';

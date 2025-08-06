@@ -2,14 +2,16 @@ import { searchClientByEmailServer } from '../infrastructure/clientSearchOperati
 import ClientResultEmail from '../../../pages/ClientSearchByEmail';
 import { Suspense } from 'react';
 import { Skeleton } from 'antd';
-
-interface Props {
-  searchParams: { type?: string; value?: string };
-}
+import type {Props} from './interface';
 
 export default async function GetClientByEmail({ searchParams }: Props) {
   const email = searchParams.value?.trim() ?? '';
-  const result = email ? await searchClientByEmailServer(email) : null;
+  let result = null;
+  if(email){
+    const searchResult = await searchClientByEmailServer(email);
+    result = searchResult || null;
+    console.log('Resultado en Server Component:', { email, result });
+  }
 
   return (
     <Suspense fallback={<Skeleton active paragraph={{ rows: 2 }} />}>

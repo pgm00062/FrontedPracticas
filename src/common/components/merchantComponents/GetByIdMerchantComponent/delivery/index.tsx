@@ -2,10 +2,7 @@ import MerchantResultById from '../../../pages/MerchantComponents/MerchantSearch
 import { searchMerchantByIdServer } from '../infrastructure/merchantSearchOperations';
 import { Suspense } from 'react';
 import { Skeleton } from 'antd';
-
-interface Props {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
+import type { Props } from './interface';
 
 export default async function GetByIdMerchantServer({ searchParams }: Props) {
   const clientId = (typeof searchParams?.clientId === 'string' ? searchParams.clientId.trim() : '') || '';

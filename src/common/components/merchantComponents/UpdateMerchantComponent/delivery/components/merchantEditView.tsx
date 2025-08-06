@@ -35,7 +35,7 @@ const MerchantEditView: React.FC<MerchantEditViewProps> = ({
                     ← Buscar otro merchant
                 </button>
                 <div className="text-sm text-blue-700 font-medium">
-                    Merchant ID: {currentMerchant.merchantId}
+                    Merchant ID: {currentMerchant.id}
                 </div>
             </div>
 

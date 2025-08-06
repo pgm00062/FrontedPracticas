@@ -1,18 +1,12 @@
 import {merchantServiceClient} from '@/common/utils/httpClient';
 import type {MerchantData, JWTMerchantData} from '../../../../utils/commonInterface';
 import {MerchantType} from '../../../../utils/enums/merchant.enum';
+import type { SearchResult } from '../delivery/interface';
 
 const DEFAULT_JWT_MERCHANT_DATA: JWTMerchantData = {
     name: 'Debug Merchant',
     address: '123 Merchant St',
     merchantType: MerchantType.MERCHANT_TYPE_FINANCIAL_SERVICES
-}
-
-export interface SearchResult {
-    success: boolean;
-    data?: MerchantData[];
-    error?: string;
-    statusCode?: number;
 }
 
 export const searchMerchantByNameServer = async (

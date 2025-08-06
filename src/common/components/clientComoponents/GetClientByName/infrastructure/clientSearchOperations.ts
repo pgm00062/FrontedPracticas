@@ -1,58 +1,34 @@
-import { clientServiceClient } from '@/common/utils/httpClient';
-import type { ClientData, JWTClientData } from '../../../../utils/commonInterface';
-
-const DEFAULT_JWT_CLIENT_DATA: JWTClientData = {
-    name: 'Debug Cliente',
-    surname: 'Test',
-    age: 30,
-    cifNifNie: '12345678A',
-    email: 'debug@test.com',
-    phone: '123456789',
-    merchantType: null
-};
+import type { ClientData } from '../../../../utils/commonInterface';
+import { cookies } from 'next/headers';
+import Service from '@/service/src';
 
 // Función principal para buscar cliente por nombre parcial 
 export const searchClientByNameServer = async (
   name: string
 ): Promise<ClientData[]> => {
   try {
-    const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
-    const jwt = jwtResponse.data.token;
+    const token = cookies().get('authToken')?.value;
+    if (!token) {
+      console.log('No se encontró token en cookies');
+      return [];
+    }
 
-    const response = await clientServiceClient.get(`/clients/name?name=${name}`, {
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: 5000,
-      validateStatus: () => true
+    const response: any = await Service.getCases('getClientByName', {
+      signal: undefined,
+      endPointData: name,
+      token,
     });
 
-    if (response.status === 200) {
+    // Si la respuesta es un objeto con .data, úsalo; si es un array, devuélvelo directamente
+    if (Array.isArray(response)) {
+      return response as ClientData[];
+    }
+    if (response?.data && Array.isArray(response.data)) {
       return response.data as ClientData[];
     }
     return [];
   } catch (error) {
-
+    console.error('Error buscando cliente por nombre:', error);
     return [];
-  } 
-};
-
-export const getRecentClientsServer = async (): Promise<ClientData[]> => {
-  const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
-  const jwt = jwtResponse.data.token;
-
-  const response = await clientServiceClient.get('/clients/recent', {
-    headers: {
-      'Authorization': `Bearer ${jwt}`,
-      'Content-Type': 'application/json'
-    },
-    timeout: 5000,
-    validateStatus: () => true
-  });
-
-  if (response.status === 200) {
-    return response.data as ClientData[];
   }
-  return [];
 };

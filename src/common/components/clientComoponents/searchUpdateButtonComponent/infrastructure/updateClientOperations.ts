@@ -1,39 +1,22 @@
-import { clientServiceClient } from '@/common/utils/httpClient';
-import { API_ENDPOINTS } from '@/common/utils/apiConfig';
-
-export const DEFAULT_JWT_CLIENT_DATA = {
-  name: 'Debug Cliente',
-  surname: 'Test',
-  age: 30,
-  cifNifNie: '12345678A',
-  email: 'debug@test.com',
-  phone: '123456789',
-  merchantType: null
-};
+import Service from '@/service/src';
 
 export const updateClientById = async (
   id: string,
   clientData: any,
+  token: string | undefined,
   onLog: (message: string) => void
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   onLog(`🔄 Actualizando cliente ID: ${id}`);
 
   try {
-    // 🔑 Generar JWT
-    onLog('🔑 Generando JWT para actualización...');
-    
-    const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', DEFAULT_JWT_CLIENT_DATA);
-    
-    if (jwtResponse.status !== 200) {
-      onLog(`❌ Error generando JWT: ${jwtResponse.status}`);
-      return { success: false, error: `Error generando JWT: ${jwtResponse.status}` };
+    if (!token) {
+      onLog('❌ No se encontró token de autenticación');
+      return { success: false, error: 'Token de autenticación requerido' };
     }
 
-    const jwt = jwtResponse.data.token;
-    onLog(`✅ JWT generado para actualización`);
-
-    // 📊 Preparar datos para actualización
+    // 📊 Preparar datos para actualización (incluir ID para la URL)
     const updateData = {
+      id: id,  // <- Incluir ID para que la query pueda construir la URL
       name: clientData.name,
       surname: clientData.surname,
       email: clientData.email,
@@ -46,18 +29,12 @@ export const updateClientById = async (
     onLog(`🔄 Enviando PUT a: /clients/${id}`);
 
     // 🔄 Actualizar cliente
-    const response = await clientServiceClient.put(
-      API_ENDPOINTS.CLIENTS.UPDATE(id),
-      updateData,
-      {
-        headers: { 
-          'Authorization': `Bearer ${jwt}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 5000,
-        validateStatus: () => true
-      }
-    );
+    const response: any = await Service.getCases('updateClient', {
+      signal: undefined,
+      endPointData: updateData,  
+      body: updateData,          
+      token,
+    });
 
     onLog(`📡 Respuesta actualización: ${response.status} - ${response.statusText}`);
 
@@ -79,12 +56,12 @@ export const updateClientById = async (
 
   } catch (error: any) {
     onLog(`❌ Error de conexión en actualización: ${error.message}`);
-    
+
     if (error.response) {
       onLog(`📡 Status: ${error.response.status}`);
       onLog(`📋 Data: ${JSON.stringify(error.response.data, null, 2)}`);
     }
-    
+
     return { success: false, error: `Error de conexión: ${error.message}` };
   }
 };

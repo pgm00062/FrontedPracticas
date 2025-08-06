@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message, InputNumber } from "antd";
 import { useRouter } from 'next/navigation';
+import { useService } from '@/common/hooks/useService';
 
 const { Title } = Typography;
 
@@ -12,6 +13,7 @@ interface RegisterFormProps {
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [form] = Form.useForm();
   const router = useRouter();
+  const { executeUseCase } = useService();
 
   const [isCreating, setIsCreating] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -20,18 +22,9 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setIsCreating(true);
     
     try {
-      const response = await fetch('/api/register-client', {
-        method: 'POST',
-        body: JSON.stringify(values),
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-      });
+      const response: any = await executeUseCase('registerClient', values);
       
-      const data = await response.json();
-      
-      if (data.success) {
+      if (response.data?.success) {
         message.success('✅ Registro completado con éxito');
         form.resetFields();
         setIsRedirecting(true);
@@ -50,12 +43,18 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           router.push('/');
         }, 2000);
       } else {
-        const errorMessage = data.error || 'Error desconocido al registrar el cliente';
+        const errorMessage = response.data?.error || 'Error desconocido al registrar el cliente';
         message.error(`❌ ${errorMessage}`);
       }
-    } catch (error) {
-      const errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-      message.error(errorMessage);
+    } catch (error: any) {
+      let errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      
+      // Manejar errores específicos de la respuesta
+      if (error.body) {
+        errorMessage = error.body.error || error.statusText || errorMessage;
+      }
+      
+      message.error(`❌ ${errorMessage}`);
     } finally {
       setIsCreating(false);
     }

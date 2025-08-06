@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { deleteClientById } from './deleteClientOperations';
 import type { DeleteClientState } from '../delivery/interface';
 import { toast } from 'sonner';
-import { ClientData } from '../../GetBClientIDComponent/delivery/interface';
 import {ClientDeleteData} from '../delivery/interface';
+import Cookies from 'js-cookie';
 
 export const useDeleteClient = () => {
     const [state, setState] = useState<DeleteClientState>({
@@ -50,7 +50,8 @@ export const useDeleteClient = () => {
         addLog('🗑️ Confirmando eliminación permanente...');
 
         try {
-            const result = await deleteClientById(state.clientToDelete.id, addLog);
+            const token = Cookies.get('authToken');
+            const result = await deleteClientById(state.clientToDelete.id, token, addLog);
             if (result.success) {
                 toast.success('✅ Cliente eliminado exitosamente');
                 addLog(`✅ Cliente eliminado exitosamente: ${state.clientToDelete.name} ${state.clientToDelete.surname}`);

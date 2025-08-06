@@ -7,13 +7,10 @@ import SearchActions from './components/searchActions';
 const ClientResult = lazy(() => import('./components/clientResult'));
 import NotFoundMessage from './components/notFoundMessage';
 import LogDisplay from './components/logDisplay';
-
+import { useService } from '@/common/hooks/useService';
+import { toast } from 'sonner';
 import type { LogEntry, ClientData } from '../../../utils/commonInterface';
-
-interface Props {
-  result: ClientData | null;
-  email: string;
-}
+import type { Props } from './interface';
 
 const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -22,13 +19,23 @@ const ClientResultEmail: React.FC<Props> = ({ result, email }) => {
   const [inputEmail, setInputEmail] = useState(email);
   const router = require('next/navigation').useRouter();
   const { Title } = Typography;
+  const {executeUseCase} = useService();
 
   const handleSearch = () => {
     setLogs([]);
     setLastResult(null);
     setLoading(true);
-    router.push(`?email=${encodeURIComponent(inputEmail)}`);
-    setTimeout(() => setLoading(false), 600);
+
+    try{
+      const client: any = executeUseCase('getClientByEmail', { email: inputEmail });
+      setLastResult(client);
+    }catch (error: any) {
+      const errorMessage = error.body?.error || error.statusText || 'Error al buscar cliente';
+      toast.error(`❌ ${errorMessage}`);
+    } finally {
+      setLoading(false);
+      router.push(`?email=${encodeURIComponent(inputEmail)}`);
+    }
   };
 
   const clearResults = () => {

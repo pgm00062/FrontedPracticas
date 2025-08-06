@@ -1,19 +1,21 @@
 'use client';
-import React, { useState } from 'react';
-import type { ClientFormData, CreateClientResult } from '../../../utils/commonInterface';
-import { DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData } from './infrastructure/clientDataOperations';
+import  { FC, useState } from 'react';
+import type { ClientFormData, CreateClientResult } from '../../../../utils/commonInterface';
+import { DEFAULT_CLIENT_DATA, generateRandomClient, validateClientData, transformClientForCreation } from '../infrastructure/clientDataOperations';
 import { toast } from 'sonner';
 import { Button, Spin, Skeleton } from 'antd';
+import { useService } from '@/common/hooks/useService';
 
 import ClientFormFields from './components/clientFormFields';
 import ResultDisplay from './components/resultDisplay';
 import LogDisplay from './components/logDisplay';
 
-const CreateClientForm: React.FC = () => {
-  const [logs, setLogs] = useState<string[]>([]);
+const CreateClientForm: FC = () => {
+  const [logs] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [lastResult, setLastResult] = useState<CreateClientResult | null>(null);
   const [clientData, setClientData] = useState<ClientFormData>(DEFAULT_CLIENT_DATA);
+  const { executeUseCase } = useService();
 
   const handleInputChange = (field: keyof ClientFormData, value: string | number) => {
     setClientData(prev => ({ ...prev, [field]: value }));
@@ -27,19 +29,25 @@ const CreateClientForm: React.FC = () => {
 
   const createClient = async () => {
     setIsCreating(true);
-    const response = await fetch('/api/create-client', {
-      method: 'POST',
-      body: JSON.stringify(clientData),
-      headers: { 'Content-Type': 'application/json' }
-    });
-    const result: CreateClientResult = await response.json();
-    setLastResult(result);
-    setIsCreating(false);
-
-    if (!result.success) {
-      toast.error(result.error || '❌ Error desconocido al crear cliente');
-    } else {
-      toast.success('Cliente creado correctamente');
+    
+    try {
+      // Transformar datos antes de enviar
+      const transformedClientData = transformClientForCreation(clientData);
+      
+      const response: any = await executeUseCase('createClient', transformedClientData);
+      setLastResult(response.data);
+      
+      if (!response.data?.success) {
+        toast.error(response.data?.error || '❌ Error desconocido al crear cliente');
+      } else {
+        toast.success('Cliente creado correctamente');
+      }
+    } catch (error: any) {
+      const errorMessage = error.body?.error || error.statusText || 'Error de conexión';
+      toast.error(`❌ ${errorMessage}`);
+      setLastResult({ success: false, error: errorMessage });
+    } finally {
+      setIsCreating(false);
     }
   };
 

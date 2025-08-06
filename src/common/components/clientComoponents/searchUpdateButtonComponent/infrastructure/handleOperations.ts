@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {updateClientById} from '../infrastructure/updateClientOperations';
 import type { ClientFormData, ClientUpdateData, UpdateClientState } from '../delivery/interface';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 export const handleOperations = () => {
     const [state, setState] = useState<UpdateClientState>({
@@ -31,12 +32,11 @@ export const handleOperations = () => {
 
   // ✅ PASO 2: Actualizar datos del cliente
   const handleUpdate = async () => {
-
-      setState(prev => ({ 
-          ...prev, 
-          isUpdating: true,
-          showInstructions: false  // ✅ OCULTAR AQUÍ
-      }));
+    setState(prev => ({
+      ...prev,
+      isUpdating: true,
+      showInstructions: false
+    }));
 
     if (!state.updatedClient) {
       toast.error('❌ No hay datos para actualizar');
@@ -44,15 +44,19 @@ export const handleOperations = () => {
       return;
     }
 
-    setState(prev => ({ ...prev, isUpdating: true }));
+    console.log('Datos a actualizar:', state.updatedClient);
 
     try {
+      const token = Cookies.get('authToken');
       const result = await updateClientById(
         state.updatedClient.id,
         state.updatedClient,
+        token,
         addLog
       );
 
+      console.log('Resultado actualización:', result);
+      console.log('Token:', token);
       setState(prev => ({
         ...prev,
         result,
@@ -60,7 +64,6 @@ export const handleOperations = () => {
       }));
 
       if (result.success) {
-        // Actualizar datos actuales con los nuevos
         setState(prev => ({
           ...prev,
           currentClient: result.data
@@ -119,4 +122,3 @@ export const handleOperations = () => {
         addLog
     };
 }
-    

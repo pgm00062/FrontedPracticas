@@ -1,4 +1,4 @@
-import CreateClientForm from '../../../pages/CreateClientUI';
+import CreateClientForm from '../../../pages/CreateClientUI/Delivery';
 
 export default function CreateClientUI() {
   return <CreateClientForm />;

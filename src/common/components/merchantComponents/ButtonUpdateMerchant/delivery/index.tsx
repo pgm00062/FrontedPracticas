@@ -1,14 +1,9 @@
 import React, { useState, Suspense } from 'react';
 import { Modal, Button, Spin, Skeleton } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import type {UpdateMerchantData} from '../../../../utils/commonInterface';
 import MerchantFormFields from './components/merchantFormFields';
 import {handleOperations} from '../infrastructure/handleOperations';
-
-interface ButtonUpdateMerchantProps {
-    merchant: UpdateMerchantData;
-    onBack?: () => void;
-}
+import type { ButtonUpdateMerchantProps } from './interface';
 
 const ButtonUpdateMerchant: React.FC<ButtonUpdateMerchantProps> = ({merchant, onBack}) => {
     const [visible, setVisible] = useState(false);

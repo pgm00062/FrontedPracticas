@@ -38,5 +38,4 @@ const LogDisplay: React.FC<LogDisplayProps> = ({ logs }) => {
     </div>
   );
 };
-
 export default LogDisplay;

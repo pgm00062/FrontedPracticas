@@ -1,7 +1,6 @@
 import { clientServiceClient } from '@/common/utils/httpClient';
 import type { LoginFormData, LoginResult } from '../../../../utils/commonInterface';
 
-// Función para validar datos del formulario de login
 const validateLoginData = (data: LoginFormData): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
@@ -38,16 +37,14 @@ export const clientLogin = async (
       password: loginData.password,
     };
 
-    // Intentar login directo
     let loginResponse = await clientServiceClient.post('/clients/login', loginPayload, {
       headers: { 'Content-Type': 'application/json' },
       timeout: 15000,
       validateStatus: () => true
     });
 
-    // Si falla por JWT, intentar con token generado
     if (loginResponse.status === 401 && loginResponse.data?.error?.includes('JWT')) {
-      // Obtener datos del usuario por email
+
       let userData = null;
       
       try {
@@ -60,7 +57,7 @@ export const clientLogin = async (
           userData = userResponse.data;
         }
       } catch (userError: any) {
-        // Error obteniendo datos del usuario - usar datos mínimos
+
       }
       
       if (!userData) {

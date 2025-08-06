@@ -1,23 +1,22 @@
-import { getRecentClientsServer, searchClientByNameServer } from '../infrastructure/clientSearchOperations';
+import { searchClientByNameServer } from '../infrastructure/clientSearchOperations';
 import ClientResultsClient from '../../../pages/ClientSearchByName';
-
-interface Props {
-  searchParams: { type?: string; value?: string };
-}
+import type { ClientData } from '../../../../utils/commonInterface';
+import type { Props } from './interface';
 
 export default async function GetClientByName({ searchParams }: Props) {
-  const initialQuery = searchParams.value?.trim() ?? '';
-  let clients;
-  if (initialQuery) {
-    clients = await searchClientByNameServer(initialQuery);
-    if (!clients || clients.length === 0) {
-      clients = await getRecentClientsServer();
+  const name = searchParams.value?.trim() ?? '';
+  let clients: ClientData[] = []; // <-- tipo explícito
+
+  if (name) {
+    const searchResult = await searchClientByNameServer(name);
+    clients = searchResult || [];
+    console.log('Resultado en Server Component:', { name, clients });
+    if (clients.length === 0) {
+      clients = await searchClientByNameServer(name.toLowerCase()) || [];
     }
-  } else {
-    clients = await getRecentClientsServer();
   }
 
   return (
-    <ClientResultsClient initialClients={clients} initialQuery={initialQuery} />
+    <ClientResultsClient initialClients={clients} initialQuery={name} />
   );
-} 
+}

@@ -1,3 +1,8 @@
+export interface ButtonUpdateClientProps {
+  client: ClientUpdateData;
+  onBack?: () => void;
+}
+
 export interface ClientUpdateData {
     id: string; 
   surname: string;

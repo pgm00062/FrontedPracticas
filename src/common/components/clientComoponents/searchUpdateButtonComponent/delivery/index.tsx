@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { Modal, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import type { ClientUpdateData } from "./interface";
+import type { ButtonUpdateClientProps } from "./interface";
 import ClientFormFields from "./components/clientFormFields";
 import { handleOperations } from "../infrastructure/handleOperations";
 
-interface ButtonUpdateClientProps {
-  client: ClientUpdateData;
-  onBack?: () => void;
-}
 
 const ButtonUpdateClient: React.FC<ButtonUpdateClientProps> = ({ client, onBack }) => {
   const [visible, setVisible] = useState(false);
@@ -21,11 +17,11 @@ const ButtonUpdateClient: React.FC<ButtonUpdateClientProps> = ({ client, onBack 
   } = handleOperations();
 
   // Inicializa el formulario con los datos del cliente al abrir el modal
-    const handleOpen = () => {
+  const handleOpen = () => {
     handleReset();
     initializeUpdateClient(client);
     setVisible(true);
-    };
+  };
 
   const handleClose = () => {
     setVisible(false);

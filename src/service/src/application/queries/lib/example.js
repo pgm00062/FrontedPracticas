@@ -1,4 +1,4 @@
-import manageRequest from '@/domain/manageRequest';
+import manageRequest from '../../../../../domain/manageRequest';
 
 const exampleUseCases = {
   getComerces: (signal, values, token) => {
@@ -16,6 +16,8 @@ const exampleUseCases = {
   },
 
   postComerces: (signal, values, token) => {
+
+    const header = {}
     
     return manageRequest(
       signal,

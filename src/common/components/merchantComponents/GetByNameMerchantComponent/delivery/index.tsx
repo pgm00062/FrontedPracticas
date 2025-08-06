@@ -2,10 +2,7 @@ import { searchMerchantByNameServer } from '../infrastructure/merchantSearchOper
 import GetByNameMerchantComponent from '../../../pages/MerchantComponents/MerchantSearchByName';
 import { Suspense } from 'react';
 import { Skeleton } from 'antd';
-
-interface Props {
-    searchParams: { name?: string };
-}
+import { Props } from './interface';
 
 export default async function GetMerchantByName({ searchParams }: Props) {
   const merchantName = searchParams?.name?.trim() || "";

@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useRouter } from 'next/navigation';
+import { useService } from '@/common/hooks/useService';
+import { setCookie } from '@/common/utils/auth';
 
 const { Title } = Typography;
 
@@ -13,28 +15,22 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { executeUseCase } = useService();
 
   const onFinish = async (values: any) => {
     setIsLoggingIn(true);
     
     try {
-      const response = await fetch('/api/login-client', {
-        method: 'POST',
-        body: JSON.stringify(values),
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-      });
+      const response: any = await executeUseCase('loginClient', values);
       
-      const data = await response.json();
-      
-      if (data.success) {
+      if (response.data?.success) {
         message.success('✅ Login exitoso');
         
-        if (data.jwt) {
-          localStorage.setItem('authToken', data.jwt);
+        // Guardar token en cookie en lugar de localStorage
+        if (response.data.jwt) {
+          setCookie('authToken', response.data.jwt, 7); 
         }
+        
         form.resetFields();
         
         const hide = message.loading({
@@ -49,12 +45,18 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         }, 1500);
         
       } else {
-        const errorMessage = data.error || 'Error desconocido al hacer login';
+        const errorMessage = response.data?.error || 'Error desconocido al hacer login';
         message.error(`❌ ${errorMessage}`);
       }
-    } catch (error) {
-      const errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-      message.error(errorMessage);
+    } catch (error: any) {
+      let errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      
+      // Manejar errores específicos de la respuesta
+      if (error.body) {
+        errorMessage = error.body.error || error.statusText || errorMessage;
+      }
+      
+      message.error(`❌ ${errorMessage}`);
     } finally {
       setIsLoggingIn(false);
     }

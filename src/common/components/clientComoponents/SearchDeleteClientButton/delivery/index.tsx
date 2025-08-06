@@ -1,14 +1,11 @@
+import { FC } from 'react';
 import {useDeleteClient } from '../infrastructure/handleOperations'
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
-import { ClientDeleteData } from './interface';
+import { ButtonDeleteClientProps } from './interface';
 import {Button} from 'antd';
 
-interface ButtonDeleteClientProps {
-  client: ClientDeleteData;
-  onDeleted?: () => void; // Callback when deletion is confirmed
-}
 
-const ButtonDeleteClient: React.FC<ButtonDeleteClientProps> = ({ client, onDeleted }) => {
+const ButtonDeleteClient: FC<ButtonDeleteClientProps> = ({ client, onDeleted }) => {
   const {
     state,
     showConfirmModal,
