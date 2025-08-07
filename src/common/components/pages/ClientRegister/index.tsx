@@ -3,12 +3,10 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message, InputNumber } from "antd";
 import { useRouter } from 'next/navigation';
 import { useService } from '@/common/hooks/useService';
+import type { RegisterFormProps } from './interface';
 
 const { Title } = Typography;
 
-interface RegisterFormProps {
-  onSwitchToLogin: () => void;
-}
 
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [form] = Form.useForm();

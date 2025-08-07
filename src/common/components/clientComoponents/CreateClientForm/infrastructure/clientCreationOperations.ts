@@ -15,7 +15,6 @@ export const createClientWithServiceLayer = async (
       };
     }
 
-
     throw new Error('Esta función debe ser reemplazada por el uso del hook useService en el componente');
     
   } catch (error: any) {

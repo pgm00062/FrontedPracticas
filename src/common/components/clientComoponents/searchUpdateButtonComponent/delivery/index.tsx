@@ -4,6 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import type { ButtonUpdateClientProps } from "./interface";
 import ClientFormFields from "./components/clientFormFields";
 import { handleOperations } from "../infrastructure/handleOperations";
+import { toast } from "sonner";
 
 
 const ButtonUpdateClient: React.FC<ButtonUpdateClientProps> = ({ client, onBack }) => {
@@ -26,6 +27,15 @@ const ButtonUpdateClient: React.FC<ButtonUpdateClientProps> = ({ client, onBack 
   const handleClose = () => {
     setVisible(false);
     if (onBack) onBack();
+  };
+
+  const handleSave = () => {
+        console.log('Callback ejecutado: cerrando modal y mostrando toast');
+
+    handleUpdate(() => {
+      setVisible(false); // Cierra el modal
+      toast.success('✅ Cambios guardados con éxito'); // Muestra el toast
+    });
   };
 
   return (
@@ -61,7 +71,7 @@ const ButtonUpdateClient: React.FC<ButtonUpdateClientProps> = ({ client, onBack 
           isDisabled={state.isUpdating}
         />
         <div style={{ textAlign: "right", marginTop: 24 }}>
-          <Button type="primary" onClick={handleUpdate} loading={state.isUpdating}>
+          <Button type="primary" onClick={handleSave} loading={state.isUpdating}>
             Guardar cambios
           </Button>
         </div>

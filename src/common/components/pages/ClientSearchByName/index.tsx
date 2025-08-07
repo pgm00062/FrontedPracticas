@@ -2,7 +2,6 @@
 import  { useState, lazy,FC } from 'react';
 import { Card, Typography, Input} from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
 import SearchActions from './components/searchActions';
 const ClientResultsList = lazy(() => import('./components/clientResult'));
 import NotFoundMessage from './components/notFoundMessage';

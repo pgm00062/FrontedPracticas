@@ -50,11 +50,6 @@ const validateRegisterData = (data: RegisterFormData): { isValid: boolean; error
   };
 };
 
-// Función para generar JWT
-export const generateJWTForCreation = async (clientData: ClientFormData): Promise<string> => {
-    const response = await clientServiceClient.post('/api/auth/generate-token-client', clientData);
-    return response.data.token;
-};
 
 // Función principal para crear cliente
 export const createClientRegister = async (

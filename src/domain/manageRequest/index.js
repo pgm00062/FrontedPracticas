@@ -68,7 +68,7 @@ const manageRequest = async (
     const responseBody = await response.text();
 
     if (!response.ok) {
-      console.error('[FETCH_ERROR]', response);
+      console.error('[FETCH_ERROR]', responseBody);
       throw {
         params,
         query: requestString,

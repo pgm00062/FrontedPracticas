@@ -3,6 +3,7 @@ import {updateClientById} from '../infrastructure/updateClientOperations';
 import type { ClientFormData, ClientUpdateData, UpdateClientState } from '../delivery/interface';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
+import { message } from 'antd';
 
 export const handleOperations = () => {
     const [state, setState] = useState<UpdateClientState>({
@@ -31,7 +32,7 @@ export const handleOperations = () => {
   };
 
   // ✅ PASO 2: Actualizar datos del cliente
-  const handleUpdate = async () => {
+  const handleUpdate = async (onSuccess?: () => void) => {
     setState(prev => ({
       ...prev,
       isUpdating: true,
@@ -68,8 +69,8 @@ export const handleOperations = () => {
           ...prev,
           currentClient: result.data
         }));
-        toast.success('✅ Cliente actualizado exitosamente');
         addLog('✅ Cliente actualizado exitosamente en la interfaz');
+        if (onSuccess) onSuccess(); // <-- Ejecuta el callback
       }
 
     } catch (error) {
@@ -108,6 +109,7 @@ export const handleOperations = () => {
   const handleSearchIdChange = (value: string) => {
     setState(prev => ({ ...prev, searchId: value }));
   };
+ 
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
   };
@@ -119,6 +121,6 @@ export const handleOperations = () => {
         handleReset,
         handleSearchIdChange,
         handleKeyPress,
-        addLog
+        addLog,
     };
 }

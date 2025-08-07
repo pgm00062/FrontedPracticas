@@ -11,7 +11,7 @@ export const transformClientForCreation = (data: ClientFormData) => {
     age: data.age.toString(),
     status: 'ACTIVE' as const,
     
-    gIndex2Pk: data.email,  // ✅ CORRECTO: 'pk' en minúscula
+    gIndex2Pk: data.email,  
     
     // Para GSI_Name (buscar por nombre)
     GSI_PK: "CLIENT#",

@@ -3,22 +3,18 @@ import type { LoginFormData, LoginResult } from '../../../../utils/commonInterfa
 
 const validateLoginData = (data: LoginFormData): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
-  
   if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
     errors.push('El email no es válido');
   }
-  
   if (!data.password || data.password.length < 6) {
     errors.push('La contraseña debe tener al menos 6 caracteres');
   }
-  
   return {
     isValid: errors.length === 0,
     errors
   };
 };
 
-// Función principal para hacer login
 export const clientLogin = async (
   loginData: LoginFormData
 ): Promise<LoginResult> => {
@@ -37,80 +33,12 @@ export const clientLogin = async (
       password: loginData.password,
     };
 
-    let loginResponse = await clientServiceClient.post('/clients/login', loginPayload, {
+    const loginResponse = await clientServiceClient.post('/clients/login', loginPayload, {
       headers: { 'Content-Type': 'application/json' },
       timeout: 15000,
       validateStatus: () => true
     });
 
-    if (loginResponse.status === 401 && loginResponse.data?.error?.includes('JWT')) {
-
-      let userData = null;
-      
-      try {
-        const userResponse = await clientServiceClient.get(`/clients/email?email=${encodeURIComponent(loginPayload.email)}`, {
-          timeout: 10000,
-          validateStatus: () => true
-        });
-        
-        if (userResponse.status === 200 && userResponse.data) {
-          userData = userResponse.data;
-        }
-      } catch (userError: any) {
-
-      }
-      
-      if (!userData) {
-        userData = {
-          name: 'Usuario',
-          surname: 'Temporal',
-          email: loginPayload.email,
-          password: loginPayload.password,
-          phone: '123456789',
-          cifNifNie: '12345678Z',
-          age: '25',
-          status: 'ACTIVE'
-        };
-      } else {
-        // Agregar password a los datos obtenidos
-        userData.password = loginPayload.password;
-      }
-      
-      // Generar JWT
-      try {
-        const jwtResponse = await clientServiceClient.post('/api/auth/generate-token-client', userData, {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 15000,
-          validateStatus: () => true
-        });
-        
-        if (jwtResponse.status === 200 && jwtResponse.data?.token) {
-          const jwt = jwtResponse.data.token;
-          
-          // Reintentar login con JWT
-          loginResponse = await clientServiceClient.post('/clients/login', loginPayload, {
-            headers: {
-              'Authorization': `Bearer ${jwt}`,
-              'Content-Type': 'application/json'
-            },
-            timeout: 15000,
-            validateStatus: () => true
-          });
-        } else {
-          return {
-            success: false,
-            error: `Error generando JWT: ${jwtResponse.data?.error || 'Error desconocido'}`
-          };
-        }
-      } catch (jwtError: any) {
-        return {
-          success: false,
-          error: 'Error generando token de autenticación'
-        };
-      }
-    }
-
-    // Evaluar respuesta final
     if (loginResponse.status === 200) {
       return {
         success: true,

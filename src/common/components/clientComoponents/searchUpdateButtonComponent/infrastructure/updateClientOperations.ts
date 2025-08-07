@@ -14,9 +14,8 @@ export const updateClientById = async (
       return { success: false, error: 'Token de autenticación requerido' };
     }
 
-    // 📊 Preparar datos para actualización (incluir ID para la URL)
     const updateData = {
-      id: id,  // <- Incluir ID para que la query pueda construir la URL
+      id: id,  
       name: clientData.name,
       surname: clientData.surname,
       email: clientData.email,
@@ -36,32 +35,29 @@ export const updateClientById = async (
       token,
     });
 
-    onLog(`📡 Respuesta actualización: ${response.status} - ${response.statusText}`);
-
-    if (response.status === 200) {
-      onLog(`✅ Cliente actualizado exitosamente`);
+    if (response && response.id) {
+      onLog(`✅ Cliente actualizado exitosamente (formato directo)`);
+      onLog(`👤 Datos actualizados: ${JSON.stringify(response, null, 2)}`);
+      return { success: true, data: response };
+    }
+    // Éxito si recibes el objeto cliente envuelto en { success, data }
+    if (response && response.success && response.data && response.data.id) {
+      onLog(`✅ Cliente actualizado exitosamente (formato envuelto)`);
       onLog(`👤 Datos actualizados: ${JSON.stringify(response.data, null, 2)}`);
       return { success: true, data: response.data };
-    } else if (response.status === 404) {
-      onLog(`❌ Cliente no encontrado para actualizar: ${id}`);
-      return { success: false, error: `Cliente no encontrado: ${id}` };
-    } else if (response.status === 400) {
-      onLog(`❌ Datos inválidos para actualización`);
-      onLog(`📋 Error: ${JSON.stringify(response.data, null, 2)}`);
-      return { success: false, error: `Datos inválidos: ${response.data?.message || 'Bad Request'}` };
-    } else {
-      onLog(`❌ Error actualizando: ${response.status}`);
-      return { success: false, error: `Error: ${response.status}` };
     }
+    // Si no se cumple ningún caso anterior, retorna error
+    onLog(`❌ Respuesta inesperada del servidor: ${JSON.stringify(response, null, 2)}`);
+    return { success: false, error: 'Respuesta inesperada del servidor' };
 
   } catch (error: any) {
     onLog(`❌ Error de conexión en actualización: ${error.message}`);
+    onLog(`❌ Error completo: ${JSON.stringify(error, null, 2)}`); 
 
     if (error.response) {
       onLog(`📡 Status: ${error.response.status}`);
       onLog(`📋 Data: ${JSON.stringify(error.response.data, null, 2)}`);
     }
-
     return { success: false, error: `Error de conexión: ${error.message}` };
   }
 };

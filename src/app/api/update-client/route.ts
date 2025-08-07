@@ -4,7 +4,6 @@ export async function PUT(request: Request) {
   try {
     const data = await request.json();
     
-    // Extraer token del header
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
 
@@ -15,7 +14,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Extraer ID del objeto data
     const { id, ...updateData } = data;
     
     if (!id) {
@@ -52,12 +50,8 @@ export async function PUT(request: Request) {
     console.log(`📡 Respuesta del backend: ${response.status} - ${response.statusText}`);
 
     if (response.ok) {
-      return NextResponse.json({
-        success: true,
-        data: responseData,
-        status: response.status,
-        statusText: response.statusText
-      });
+      // Devuelve SOLO el objeto cliente actualizado, no lo envuelvas
+      return NextResponse.json(responseData, { status: 200 });
     } else {
       return NextResponse.json({
         success: false,

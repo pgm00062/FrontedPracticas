@@ -4,12 +4,9 @@ import { Form, Input, Button, Typography, message } from "antd";
 import { useRouter } from 'next/navigation';
 import { useService } from '@/common/hooks/useService';
 import { setCookie } from '@/common/utils/auth';
+import type { LoginFormProps } from './interface';
 
 const { Title } = Typography;
-
-interface LoginFormProps {
-  onSwitchToRegister: () => void;
-}
 
 export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [form] = Form.useForm();
@@ -26,7 +23,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       if (response.data?.success) {
         message.success('✅ Login exitoso');
         
-        // Guardar token en cookie en lugar de localStorage
         if (response.data.jwt) {
           setCookie('authToken', response.data.jwt, 7); 
         }

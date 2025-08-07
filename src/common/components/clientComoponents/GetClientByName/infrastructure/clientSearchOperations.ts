@@ -19,7 +19,6 @@ export const searchClientByNameServer = async (
       token,
     });
 
-    // Si la respuesta es un objeto con .data, úsalo; si es un array, devuélvelo directamente
     if (Array.isArray(response)) {
       return response as ClientData[];
     }
